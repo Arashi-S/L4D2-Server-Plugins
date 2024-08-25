@@ -68,14 +68,14 @@ static const char g_event_weapon_string[][] =
 static const char g_kill_type[][] =
 {
 	"■■‖═════>",     //0 melee
-	"//^ˉˉˉ",        //1 pistol
-	"Tˉˉ══",         //2 smg
-	"■︻TT^ˉˉ^══",   //3 rifle
-	"■︻/══^^",      //4 shotgun
+	"/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿",        //1 pistol
+	"⌐╤═─",         //2 smg
+	"︻╦╦═─",   //3 rifle
+	"▄︻═══∶∷",      //4 shotgun
 	"■︻T^ˉ════",    //5 sniper
 	"●ˉˉˉ",          //6 pipe bomb
 	"__∫∫∫∫__",      //7 inferno, entityflame
-	"■︻T^ˉ****",	//8 M60
+	"▄︻╤■══一",	//8 M60
 	"︻T■■■■■",	    //9 grenade_launcher_projectile
 
 	"/*/*/",	     //10 killed by push

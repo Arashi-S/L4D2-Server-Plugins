@@ -42,11 +42,11 @@
 	}
 	"推推乐"
 	{
-		"l4d_survivor_shove_flags """
+		"exec Vote/Shove/On.cfg"
 		{
 			"message" "开启推推乐"
 		}
-		"l4d_survivor_shove_flags "z""
+		"exec Vote/Shove/Off.cfg"
 		{
 			"message" "关闭推推乐"
 		}
