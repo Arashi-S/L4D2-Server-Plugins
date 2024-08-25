@@ -1,0 +1,7 @@
+"servername"
+{
+	"40040"
+	{
+		"hostname"	"VENI VIDI VICI"
+	}
+}

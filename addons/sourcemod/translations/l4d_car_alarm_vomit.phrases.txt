@@ -1,0 +1,69 @@
+/*
+	******************************************************************************************************************************************************
+
+	You can display phrases in chat with color using any of the methods below:
+
+	Using color codes:
+		•  // Default/White (use instead of \x01), Alt + 01 Keyboard Shortcut
+		•  // Light Green (use instead of \x03), Alt + 03 Keyboard Shortcut
+		•  // Gold (use instead of \x04), Alt + 04 Keyboard Shortcut
+		•  // Green (use instead of \x05), Alt + 05 Keyboard Shortcut
+
+	or
+
+	Using color tags:
+		• {white} // Default/White (use instead of \x01)
+		• {lightgreen} // Light Green (use instead of \x03)
+		• {gold} // Gold (use instead of \x04)
+		• {green} // Green (use instead of \x05)
+
+	******************************************************************************************************************************************************
+
+	Maximum Length:
+	• Default = 250
+	• Instructor Hint = 100
+
+	******************************************************************************************************************************************************
+
+	Notes:
+	*If the text length is greater than the maximum length, text will be truncated.
+	*A null terminator will be automatically added to the text, truncating the last character when the text reaches the maximum length.
+	*Colored phrases only works in chat.
+	*Chat phrases begin in {white}, even when it is not specified.
+	*Color codes and color tags are also considered in the maximum length.
+	*Plugin tag is also considered in the maximum length when enabled.
+
+	******************************************************************************************************************************************************
+*/
+
+"Phrases"
+{
+	"Plugin Tag"
+	{
+		"chi"		"{gold}[{green}CAV{gold}]{white} "
+		"en"		"{gold}[{green}CAV{gold}]{white} "
+		"es"		"{gold}[{green}CAV{gold}]{white} "
+		"hu"		"{gold}[{green}CAV{gold}]{white} "
+		"pt"		"{gold}[{green}CAV{gold}]{white} "
+		"ru"		"{gold}[{green}CAV{gold}]{white} "
+	}
+	"Activator"
+	{
+		"chi"		"{lightgreen}你{white}触发了汽车报警{white}，召唤{green}Boomed{white}作为惩罚{white}!"
+		"en"		"{lightgreen}You {white}triggered the {gold}car alarm{white} and will be {green}boomed{white} as {gold}punishment{white}!"
+		"es"		"¡{lightgreen}Usted {white}ha activado la {gold}alarma del coche{white} y serás {green}vomitado{white} como {gold}castigo{white}!"
+		"hu"		"{lightgreen}Te {white}beindítottad a {gold}kocsi riasztóját {white}és ezért {green}büntetésből {white}le leszel {gold}hányva{white}!"
+		"pt"		"{lightgreen}Você {white}disparou o {gold}alarme do carro{white} e será {green}boomado{white} como {gold}punição{white}!"
+		"ru"		"{lightgreen}Вы {white}активировали {gold}сигнализацию{white} и в {gold}наказание{white} будете {green}заблёваны{white}!"
+	}
+	"Others"
+	{
+		"#format"	"{1:N}"
+		"chi"		"{lightgreen}{1} {white}触发了汽车报警{white} ，召唤 {green}Boomed{white}作为 惩罚{white}!"
+		"en"		"{lightgreen}{1} {white}triggered the {gold}car alarm{white} and will be {green}boomed{white} as {gold}punishment{white}!"
+		"es"		"¡{lightgreen}{1} {white}ha activado la {gold}alarma del coche{white} y serás {green}vomitado{white} como {gold}castigo{white}!"
+		"hu"		"{lightgreen}{1} {white}beindította a {gold}kocsi riasztóját {white}és ezért {green}büntetésből {white}le lesz {gold}hányva{white}!"
+		"pt"		"{lightgreen}{1} {white}disparou o {gold}alarme do carro{white} e será {green}boomado{white} como {gold}punição{white}!"
+		"ru"		"{lightgreen}{1} {white}активировал {gold}сигнализацию{white} и в {gold}наказание{white} будет {green}заблёван{white}!"
+	}
+}

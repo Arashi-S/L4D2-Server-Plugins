@@ -1,0 +1,102 @@
+"Cfgs"
+{
+	"服务器选项"
+	{
+		"sm_restartmap"
+		{
+			"message" "重置当前地图"
+		}
+	}
+	"Tank防卡"
+	{
+		"exec Vote/TankFK/on.cfg"
+		{
+			"message" "开启Tank防卡"
+		}
+		"exec Vote/TankFK/off.cfg"
+		{
+			"message" "关闭Tank防卡"
+		}
+	}
+	"[ReLoad]多特"
+	{
+		"exec Vote/special/on.cfg"
+		{
+			"message" "开启多特"
+		}
+		"exec Vote/special/off.cfg"
+		{
+			"message" "关闭多特"
+		}
+	}
+	"反伤系统"
+	{
+		"sm_cvar reverseff_enabled 1"
+		{
+			"message" "开启反伤"
+		}
+		"sm_cvar reverseff_enabled 0"
+		{
+			"message" "关闭反伤"
+		}
+	}
+	"推推乐"
+	{
+		"l4d_survivor_shove_flags """
+		{
+			"message" "开启推推乐"
+		}
+		"l4d_survivor_shove_flags "z""
+		{
+			"message" "关闭推推乐"
+		}
+	}
+	"刷特系统配置"
+	{
+		"exec Vote/Special_Num/Hard_Special.cfg"
+		{
+			"message" "6特/次 16特"
+		}
+		"exec Vote/Special_Num/Common_Special.cfg"
+		{
+			"message" "3特/次 6特"
+		}
+	}
+	"门"
+	{
+		"sm_cvar l4d_safe_spam_open 0"
+		{
+			"message" "关闭暴力开门"
+		}
+		"sm_cvar l4d_safe_spam_open 1"
+		{
+			"message" "启用暴力开门"
+		}
+	}
+	"Tank飞行模式"
+	{
+		"sm_cvar ai_Tank_Bhop 1"
+		{
+			"message" "开启Tank飞行模式"
+		}
+		"sm_cvar ai_Tank_Bhop 0"
+		{
+			"message" "关闭Tank飞行模式"
+		}
+	}
+	"[ReLoad]Hud 更换"
+	{
+		"exec Vote/Hud/miuwiki.cfg"
+		{
+			"message" "[默认]启用Miuwiki Hud"
+		}
+		"exec Vote/Hud/sorallll.cfg"
+		{
+			"message" "启用sora Hud"
+		}
+		"exec Vote/Hud/NanakaNeko.cfg"
+		{
+			"message" "启用奈"S Hud"
+		}
+	}
+}

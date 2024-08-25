@@ -1,0 +1,32 @@
+"Phrases"
+{
+	"Door_Open"
+	{
+		"en"		"{olive}[Saferoom] {white}opened by {orange}%N"
+	}
+
+	"Door_Close"
+	{
+		"en"		"{olive}[Saferoom] {white}closed by {orange}%N"
+	}
+
+	"Door_Wait"
+	{
+		"en"		"{olive}[Saferoom] {white}door will unlock in {orange}%d {white}seconds"
+	}
+
+	"Door_Unlocked"
+	{
+		"en"		"{olive}[Saferoom] {white}door {orange}opened"
+	}
+
+	"Movement_Blocked"
+	{
+		"en"		"{olive}Saferoom: {white}Movement allowed in %d"
+	}
+
+	"Movement_Allowed"
+	{
+		"en"		"{olive}Saferoom: {white}Movement allowed"
+	}
+}

@@ -1,0 +1,32 @@
+﻿"Phrases"
+{
+	"Door_Open"
+	{
+		"chi"		"{olive}[安全屋公告] {white}打开安全门的是 {orange}%N"
+	}
+
+	"Door_Close"
+	{
+		"chi"		"{olive}[安全屋公告] {white}关闭安全门的是 {orange}%N"
+	}
+
+	"Door_Wait"
+	{
+		"chi"		"{olive}[安全屋公告] {white}安全门将很快解锁，剩余 {orange}%d {white}秒"
+	}
+
+	"Door_Unlocked"
+	{
+		"chi"		"{olive}[安全屋公告] {white}安全门 {orange}打开了"
+	}
+
+	"Movement_Blocked"
+	{
+		"chi"		"{olive}开局锁定: {white}在 %d后准许移动"
+	}
+
+	"Movement_Allowed"
+	{
+		"chi"		"{olive}开局锁定: {white}准许移动"
+	}
+}
