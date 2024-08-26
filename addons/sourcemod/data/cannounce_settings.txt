@@ -40,7 +40,7 @@
 	//display message to everyone (Non-admin)
 	"messages"
 	{
-		"playerjoin"		"{default}[{olive}HspAF{default}] {blue}{PLAYERTYPE} {green}{PLAYERNAME} {blue}已连接{default} {olive}{STEAMID}{default}."
+		"playerjoin"		"{default}[{olive}HspAF{default}] {blue}{PLAYERTYPE} {green}{PLAYERNAME} {blue}已连接{default} | {olive}{STEAMID}{default}."
 		"playerdisc"		"{default}[{olive}HspAF{default}] {red}{PLAYERTYPE}  {green}{PLAYERNAME} {red}断开连接{default}. ({green}{DISC_REASON}{default})"
 	}
 
@@ -48,7 +48,7 @@
 	//only display message to adm
 	"messages_admin"
 	{
-		"playerjoin"		"{default}[{olive}HspAF{default}] {blue}{PLAYERTYPE} {green}{PLAYERNAME} {blue}已连接{default}. ({green}{STEAMID},{blue}{STEAMID},{green}{PLAYERIP}{default}) "
+		"playerjoin"		"{default}[{olive}HspAF{default}] {blue}{PLAYERTYPE} {green}{PLAYERNAME} {blue}已连接{default}. ({green}{STEAMID}|{blue}{STEAMID}|{green}{PLAYERIP}{default}) "
 		"playerdisc"		"{default}[{olive}HspAF{default}] {red}{PLAYERTYPE} {green}{PLAYERNAME} {red}断开连接{default}. ({green}{DISC_REASON}{default}) "
 	}
 }
