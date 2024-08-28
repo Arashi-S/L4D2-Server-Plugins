@@ -7,17 +7,6 @@
 			"message" "重置当前地图"
 		}
 	}
-	"自动扣血解控"
-	{
-		"exec Vote/Alone/On.cfg"
-		{
-			"message" "开启自动解控"
-		}
-		"exec Vote/Alone/Off.cfg"
-		{
-			"message" "关闭自动解控"
-		}
-	}
 	"Tank防卡"
 	{
 		"exec Vote/TankFK/on.cfg"
