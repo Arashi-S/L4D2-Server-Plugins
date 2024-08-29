@@ -61,14 +61,14 @@ public void OnPluginStart()
 	g_hCvarGravityValue = CreateConVar(	"l4d_final_rescue_gravity_value", "0.25", "Set Gravity value. (1.0=Normal, >1.0=High, <1.0=Low)", CVAR_FLAGS,true,0.0 );
 	g_hCvarGravityEscapeDisable = CreateConVar(	"l4d_final_rescue_gravity_escape_ready_off", "1", "If 1, change all clients' gravity to normal when finale vehicle is ready.", CVAR_FLAGS,true,0.0,true,1.0 );
 	if(g_bL4D2Version) 
-		g_hCvarGravityInfectedFlag = CreateConVar(	"l4d_final_rescue_gravity_infected_class", "127", 
+		g_hCvarGravityInfectedFlag = CreateConVar(	"l4d_final_rescue_gravity_infected_class", "0", 
 		"Which zombie class can also obtain the gravity, 0=None, 1=Smoker, =Boomer, 4=Hunter, 8=Spitter, 16=Jockey, 32=Charger, 64=Tank. Add numbers together.", CVAR_FLAGS,true,0.0,true,127.0 );
 	else
-		g_hCvarGravityInfectedFlag = CreateConVar(	"l4d_final_rescue_gravity_infected_class", "15", 
+		g_hCvarGravityInfectedFlag = CreateConVar(	"l4d_final_rescue_gravity_infected_class", "0", 
 		"Which zombie class can also obtain the gravity, 0=None, 1=Smoker, 2=Boomer, 4=Hunter, 8=Tank. Add numbers together.", CVAR_FLAGS,true,0.0,true,15.0 );
 
 	g_hCvarMapOff =	CreateConVar("l4d_final_rescue_gravity_map_off",	"c5m5_bridge;c13m4_cutthroatcreek", "Turn off the plugin in these maps, separate by commas (no spaces). (Empty = none).", CVAR_FLAGS );
-	g_hCvarCheckInterval =	CreateConVar("l4d_final_rescue_gravity_interval",	"2", "Interval (in sec.) to set gravity for client", CVAR_FLAGS,true,1.0);
+	g_hCvarCheckInterval =	CreateConVar("l4d_final_rescue_gravity_interval",	"3", "Interval (in sec.) to set gravity for client", CVAR_FLAGS,true,1.0);
 
 	g_hCvarMPGameMode = FindConVar("mp_gamemode");
 	g_hCvarMPGameMode.AddChangeHook(ConVarChanged_Allow);
