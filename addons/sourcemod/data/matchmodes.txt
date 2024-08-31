@@ -1,0 +1,18 @@
+"MatchModes"
+{
+	"游戏模式"
+	{
+		"cfgogl/HspAF"
+		{
+			"name" "HspAF"
+		}
+		"cfgogl/3V"
+		{
+			"name" "VENI VIDI VICI"
+		}
+		"cfgogl/Alone"
+		{
+			"name" "Hunter训练"
+		}
+	}
+}
