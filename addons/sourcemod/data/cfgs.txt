@@ -55,11 +55,11 @@
 	{
 		"exec Vote/Special_Num/Hard_Special.cfg"
 		{
-			"message" "6特/次 16特"
+			"message" "8人 6特/次 16特"
 		}
 		"exec Vote/Special_Num/Common_Special.cfg"
 		{
-			"message" "3特/次 6特"
+			"message" "8人 3特/次 6特"
 		}
 	}
 	"门"
