@@ -1,2 +1,2 @@
 knife.vpk
-survivor_legs_script_modified_version.vpk
+Lux_survivor_legs_script.vpk
