@@ -43,7 +43,7 @@
 	"9"
 	{
 		"type"		"S"
-		"text"		"{GREEN}本服删除了{LIGHTGREEN}挂边的判定{GREEN}容易狡猾的老屁股们{LIGHTGREEN}别再指望队友了"
+		"text"		"{GREEN}本服删除了{LIGHTGREEN}挂边的判定{GREEN}容易脚滑的老屁股们{LIGHTGREEN}别再指望队友了"
 	}
 	"10"
 	{
