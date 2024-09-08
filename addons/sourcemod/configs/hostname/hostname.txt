@@ -1,0 +1,7 @@
+ServerName
+{
+	"40040"
+	{
+		"baseName"	"VENI VIDI VICI"
+	}
+}
