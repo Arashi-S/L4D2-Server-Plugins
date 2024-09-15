@@ -13,4 +13,9 @@
 * `mymotd`、 `myhost`
 * 启动项： `+sv_lan 0`、 `-tickrate <Value>`
 
+# 其他
+|仓库|解释|
+|-|-|
+|[L4D2-Server-Plugins_Vc](https://github.com/Arashi-S/L4D2-Server-Plugins_Vc) | 本包的另一个维护版本，相比普通战役模式有着一些优点，当然也带来一些待解决的麻烦...|
+
 ### 自娱自乐
