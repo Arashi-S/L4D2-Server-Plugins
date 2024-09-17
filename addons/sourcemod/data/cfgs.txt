@@ -31,11 +31,11 @@
 	}
 	"反伤系统"
 	{
-		"sm_cvar reverseff_enabled 1"
+		"sm_cvar l4d2_reflect_ff_enable 1"
 		{
 			"message" "开启反伤"
 		}
-		"sm_cvar reverseff_enabled 0"
+		"sm_cvar l4d2_reflect_ff_enable 0"
 		{
 			"message" "关闭反伤"
 		}
@@ -90,13 +90,9 @@
 		{
 			"message" "[默认]启用Miuwiki Hud"
 		}
-		"exec Vote/Hud/sorallll.cfg"
+		"exec Vote/Hud/scriptedHUD.cfg"
 		{
-			"message" "启用sora Hud"
-		}
-		"exec Vote/Hud/NanakaNeko.cfg"
-		{
-			"message" "启用奈"S Hud"
+			"message" "启用scripted Hud"
 		}
 	}
 }
