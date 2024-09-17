@@ -4,7 +4,8 @@
 #include <sdktools>
 #include <sdkhooks>
 #include <left4dhooks>
-#include <attachments_api>
+#undef REQUIRE_PLUGIN
+#tryinclude <attachments_api>
 
 #define ENTITY_SAFE_LIMIT 2000 //don't create model glow when entity index is above this
 #define ZC_SMOKER		1
@@ -36,10 +37,10 @@ ConVar g_hCvarColorGhost, g_hCvarColorAlive, g_hCommandAccess, g_hDefaultValue;
 int g_iCvarColorGhost, g_iCvarColorAlive;
 bool g_bDefaultValue;
 
-char g_sCommandAccesslvl[16];
+char g_sCommandAccesslvl[AdminFlags_TOTAL];
 
 bool g_bMapStarted;
-static bool g_bSpecCheatActive[MAXPLAYERS + 1]; //spectatpr open watch
+bool g_bSpecCheatActive[MAXPLAYERS + 1]; //spectatpr open watch
 int g_iModelIndex[MAXPLAYERS+1];			// Player Model entity reference
 Handle DelayWatchGlow_Timer[MAXPLAYERS+1] ; //prepare to disable player spec glow
 int g_iRoundStart, g_iPlayerSpawn;
@@ -58,7 +59,7 @@ public void OnPluginStart()
 	g_hCvarColorGhost =	CreateConVar(	"l4d2_specting_cheat_ghost_color",		"245 245 245",		"Ghost SI glow color, Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue.", FCVAR_NOTIFY);
 	g_hCvarColorAlive =	CreateConVar(	"l4d2_specting_cheat_alive_color",		"245 245 245",			"Alive SI glow color, Three values between 0-255 separated by spaces. RGB Color255 - Red Green Blue.", FCVAR_NOTIFY);
 	g_hCommandAccess = 	CreateConVar(	"l4d2_specting_cheat_use_command_flag", "", 				"Players with these flags have access to use command to toggle Speatator watching cheat. (Empty = Everyone, -1: Nobody)", FCVAR_NOTIFY);
-	g_hDefaultValue = 	CreateConVar(	"l4d2_specting_cheat_default_value", 	"0", 				"Enable Speatator watching cheat for spectators default? [1-Enable/0-Disable]", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_hDefaultValue = 	CreateConVar(	"l4d2_specting_cheat_default_value", 	"1", 				"Enable Speatator watching cheat for spectators default? [1-Enable/0-Disable]", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 
 	GetCvars();
 	g_hCvarColorGhost.AddChangeHook(ConVarChanged_Glow_Ghost);
@@ -529,18 +530,18 @@ bool CheckIfEntitySafe(int entity)
 	return true;
 }
 
-bool HasAccess(int client, char[] g_sAcclvl)
+bool HasAccess(int client, char[] sAcclvl)
 {
 	// no permissions set
-	if (strlen(g_sAcclvl) == 0)
+	if (strlen(sAcclvl) == 0)
 		return true;
 
-	else if (StrEqual(g_sAcclvl, "-1"))
+	else if (StrEqual(sAcclvl, "-1"))
 		return false;
 
 	// check permissions
 	int userFlags = GetUserFlagBits(client);
-	if ( (userFlags & ReadFlagString(g_sAcclvl)) || (userFlags & ADMFLAG_ROOT))
+	if ( (userFlags & ReadFlagString(sAcclvl)) || (userFlags & ADMFLAG_ROOT))
 	{
 		return true;
 	}
