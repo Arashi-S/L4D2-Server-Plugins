@@ -104,8 +104,8 @@
 			{
 				"library"		"engine"
 				"linux"			"@_ZN14CCommandBuffer13InsertCommandEPKcii"
-				"windows"		"\x55\x8B\x2A\x56\x57\x8B\x2A\x2A\x8B\x2A\x81\x2A\x2A\x2A\x2A\x2A\x7C"
-				/* 55 8B ? 56 57 8B ? ? 8B ? 81 ? ? ? ? ? 7C */
+				"windows"		"\x55\x8B\x2A\x83\x2A\x2A\x53\x56\x57\x8B\x2A\x2A\x89\x2A\x2A\x8D\x2A\x2A\x8A"
+				/* 55 8B ? 83 ? ? 53 56 57 8B ? ? 89 ? ? 8D ? ? 8A */
 			}
 		}
 	}

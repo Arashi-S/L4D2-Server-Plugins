@@ -40,15 +40,6 @@
 				/* ? ? ? ? ? ? 57 33 ? 83 ? ? 75 */
 			}
 
-			/* CTerrorPlayer::CleanupPlayerState(void) */
-			"CTerrorPlayer::CleanupPlayerState"
-			{
-				"library"	"server"
-				"linux"		"@_ZN13CTerrorPlayer18CleanupPlayerStateEv"
-				"windows"	"\x2A\x2A\x2A\x2A\x2A\x2A\x83\x2A\x2A\x83\x2A\x2A\x55\x8B\x2A\x2A\x89\x2A\x2A\x2A\x8B\x2A\x0F\x2A\x2A\x83\x2A\x2A\x56\x8B\x2A\xC7"
-				/* ? ? ? ? ? ? 83 ? ? 83 ? ? 55 8B ? ? 89 ? ? ? 8B ? 0F ? ? 83 ? ? 56 8B ? C7 */
-			}
-
 			/* Checkpoint::GetLargestArea(Checkpoint *__hidden this) */
 			"Checkpoint::GetLargestArea"
 			{
