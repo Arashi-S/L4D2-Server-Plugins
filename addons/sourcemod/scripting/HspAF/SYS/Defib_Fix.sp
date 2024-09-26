@@ -17,42 +17,57 @@
 */
 
 #pragma semicolon 1
-
+#pragma newdecls required
 #include <sourcemod>
 #include <sdktools>
-#include <sdkhooks>
 #include <dhooks>
 
-#pragma newdecls required
-
 #define GAMEDATA "defib_fix"
+#define PLUGIN_VERSION	"2.0.3"
 
-#define PLUGIN_VERSION	"2.0.1"
+GlobalForward
+	g_fwdSurvivorDeathModelCreated;
 
-GlobalForward g_hForward_SurvivorDeathModelCreated;
+ArrayList
+	g_aDeathModel[MAXPLAYERS + 1];
 
-Handle hOnActionComplete;
-Handle hOnStartAction;
+DynamicHook
+	g_dhOnStartAction,
+	g_dhOnActionComplete;
 
-bool g_bFixChar;
-int g_iCurrentDeathModel;
-int g_iDeathModelOwner[2048+1];
+int
+	g_iOwner,
+	g_iTempClient,
+	g_iDeathModel;
 
+bool
+	g_bOnActionComplete;
 
-public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
-{
-	if(GetEngineVersion() != Engine_Left4Dead2)
-	{
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max) {
+	if (GetEngineVersion() != Engine_Left4Dead2) {
 		strcopy(error, err_max, "Plugin only supports Left 4 Dead 2");
 		return APLRes_SilentFailure;
 	}
 	
-	g_hForward_SurvivorDeathModelCreated = new GlobalForward("L4D2_OnSurvivorDeathModelCreated", ET_Event, Param_Cell, Param_Cell);
+	CreateNative("L4D2_RemovePlayerDeathModel", Native_RemovePlayerDeathModel);
+
+	RegPluginLibrary("defib_fix");
+	g_fwdSurvivorDeathModelCreated = new GlobalForward("L4D2_OnSurvivorDeathModelCreated", ET_Event, Param_Cell, Param_Cell);
 	return APLRes_Success;
 }
 
-public Plugin myinfo =
-{
+int Native_RemovePlayerDeathModel(Handle plugin, int numParams) {
+	int client = GetNativeCell(1);
+	if (client < 1 || client > MaxClients) {
+		ThrowNativeError(SP_ERROR_PARAM, "Invalid client index.");
+		return 0;
+	}
+
+	Remove(client);
+	return 1;
+}
+
+public Plugin myinfo = {
 	name = "[L4D2]Defib_Fix",
 	author = "Lux",
 	description = "Fixes defibbing from failing when defibbing an alive character index",
@@ -60,227 +75,244 @@ public Plugin myinfo =
 	url = "forums.alliedmods.net/showthread.php?p=2647018"
 };
 
-public void OnPluginStart()
-{
-	Handle hGamedata = LoadGameConfigFile(GAMEDATA);
-	if(hGamedata == null) 
+public void OnPluginStart() {
+	char buffer[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, buffer, sizeof buffer, "gamedata/%s.txt", GAMEDATA);
+	if (!FileExists(buffer))
+		SetFailState("\n==========\nMissing required file: \"%s\".\n==========", buffer);
+
+	GameData hGameData = new GameData(GAMEDATA);
+	if (!hGameData)
 		SetFailState("Failed to load \"%s.txt\" gamedata.", GAMEDATA);
-	
-	hOnActionComplete = DHookCreateFromConf(hGamedata, "CItemDefibrillator::OnActionComplete");
-	if(hOnActionComplete == null)
-		SetFailState("Failed to make hook for 'CItemDefibrillator::OnActionComplete'");
-	
-	hOnStartAction = DHookCreateFromConf(hGamedata, "CItemDefibrillator::OnStartAction");
-	if(hOnStartAction == null)
-		SetFailState("Failed to make hook for 'CItemDefibrillator::OnStartAction'");
-	
-	Handle hDetour;
-	hDetour = DHookCreateFromConf(hGamedata, "CTerrorPlayer::GetPlayerByCharacter");
-	if(!hDetour)
-		SetFailState("Failed to find 'CTerrorPlayer::GetPlayerByCharacter' signature");
-	
-	if(!DHookEnableDetour(hDetour, false, GetPlayerByCharacter))
-		SetFailState("Failed to detour 'CTerrorPlayer::GetPlayerByCharacter'");
-	
-	hDetour = DHookCreateFromConf(hGamedata, "CSurvivorDeathModel::Create");
-	if(!hDetour)
-		SetFailState("Failed to find 'CSurvivorDeathModel::Create' signature");
-	
-	if(!DHookEnableDetour(hDetour, false, DeathModelCreatePre))
-		SetFailState("Failed to detour 'CSurvivorDeathModel::Create'");
-	
-	if(!DHookEnableDetour(hDetour, true, DeathModelCreatePost))
-		SetFailState("Failed to detour 'CSurvivorDeathModel::Create'");
-	
-	delete hGamedata;
-	
-	CreateConVar("defib_fix_version", PLUGIN_VERSION, "", FCVAR_NOTIFY|FCVAR_DONTRECORD);
-}
 
-public void OnEntityCreated(int iEntity, const char[] sClassname)
-{
-	if(sClassname[0] != 'w' || !StrEqual(sClassname, "weapon_defibrillator", false))
-	 	return;
-	
-	DHookEntity(hOnActionComplete, false, iEntity, _, OnActionCompletePre);
-	DHookEntity(hOnActionComplete, true, iEntity, _, OnActionCompletePost);
-	DHookEntity(hOnStartAction, false, iEntity, _, OnStartActionPre);
-}
-
-public MRESReturn OnActionCompletePre(Handle hReturn, Handle hParams)
-{
-	int iDeathModel = DHookGetParam(hParams, 2);
-	if(!iDeathModel)
-		return MRES_Ignored;
-	
-	if(IsAllSurvivorsAlive())//rare case
-	{
-		KillAllDeathModels();
-		DHookSetReturn(hReturn, 0);
-		return MRES_Supercede;
-	}
-	
-	g_iCurrentDeathModel = iDeathModel;
-	g_bFixChar = true;
-	return MRES_Ignored;
-}
-
-public MRESReturn OnActionCompletePost(Handle hReturn, Handle hParams)
-{
-	if(IsAllSurvivorsAlive())
-		KillAllDeathModels();
-	
-	g_bFixChar = false;//just incase	
-	return MRES_Ignored;
-}
-
-public MRESReturn GetPlayerByCharacter(Handle hReturn, Handle hParams)
-{
-	if(!g_bFixChar)
-		return MRES_Ignored;
-	g_bFixChar = false;
-	
-	static int iChar[MAXPLAYERS+1];
-	
-	int iCurrentChar = GetClientOfUserId(g_iDeathModelOwner[g_iCurrentDeathModel]);
-	if(iCurrentChar > 0 && IsClientInGame(iCurrentChar) && !IsPlayerAlive(iCurrentChar) && GetClientTeam(iCurrentChar) == 2)//check if owner of model death model is dead
-	{
-		DHookSetReturn(hReturn, iCurrentChar);
-		return MRES_Supercede;
-	}
-	
-	iCurrentChar = DHookGetParam(hParams, 1);
-	
-	for(int i = 1; i <= MaxClients; i++)
-	{
-		if(IsClientInGame(i) && !IsPlayerAlive(i) && GetClientTeam(i) == 2)
-		{
-			iChar[i] = GetEntProp(i, Prop_Send, "m_survivorCharacter", 1);
-			if(iCurrentChar == iChar[i])//if found player same char type
-			{
-				DHookSetReturn(hReturn, i);
-				return MRES_Supercede;
-			}
-		}
-		else
-		{
-			iChar[i] = -1;
-		}
-	}
-	
-	int iFoundPlayer;
-	iCurrentChar = ConvertToInternalCharacter(iCurrentChar);
-	for(int i = 1; i <= MaxClients; i++)
-	{
-		if(iChar[i] != -1)
-			iFoundPlayer = i;//fallback incase noone matches
+	DynamicDetour dDetour = DynamicDetour.FromConf(hGameData, "DD::CSurvivorDeathModel::Create");
+	if (!dDetour)
+		SetFailState("Failed to create DynamicDetour: DD::CSurvivorDeathModel::Create");
 		
-		if(iCurrentChar == iChar[i])
-		{
-			iFoundPlayer = i;
-			break;
-		}
-	}
-	if(!iFoundPlayer)
-		return MRES_Ignored;//better safe than sorry
+	if (!dDetour.Enable(Hook_Pre, DD_CSurvivorDeathModel_Create_Pre))
+		SetFailState("Failed to detour pre: DD::CSurvivorDeathModel::Create");
+
+	if (!dDetour.Enable(Hook_Post, DD_CSurvivorDeathModel_Create_Post))
+		SetFailState("Failed to detour post: DD::CSurvivorDeathModel::Create");
+
+	dDetour = DynamicDetour.FromConf(hGameData, "DD::CTerrorPlayer::GetPlayerByCharacter");
+	if (!dDetour)
+		SetFailState("Failed to create DynamicDetour: DD::CTerrorPlayer::GetPlayerByCharacter");
+
+	if (!dDetour.Enable(Hook_Post, DD_CTerrorPlayer_GetPlayerByCharacter_Post))
+		SetFailState("Failed to detour post: DD::CTerrorPlayer::GetPlayerByCharacter");
 	
-	DHookSetReturn(hReturn, iFoundPlayer);
-	return MRES_Supercede;
+	g_dhOnStartAction = DynamicHook.FromConf(hGameData, "DH::CItemDefibrillator::OnStartAction");
+	if (!g_dhOnStartAction)
+		SetFailState("Failed to create DynamicHook: DH::CItemDefibrillator::OnStartAction");
+	
+	g_dhOnActionComplete = DynamicHook.FromConf(hGameData, "DH::CItemDefibrillator::OnActionComplete");
+	if (!g_dhOnActionComplete)
+		SetFailState("Failed to create DynamicHook: DH::CItemDefibrillator::OnActionComplete");
+
+	delete hGameData;
+
+	CreateConVar("defib_fix_version", PLUGIN_VERSION, "[L4D2]Defib_Fix plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
+
+	for (int i = 1; i <= MaxClients; i++)
+		g_aDeathModel[i] = new ArrayList();
+
+	HookEvent("round_end", Event_RoundEnd, EventHookMode_PostNoCopy);
+	HookEvent("bot_player_replace", Event_BotPlayerReplace, EventHookMode_Pre);
+	HookEvent("player_bot_replace", Event_PlayerBotReplace, EventHookMode_Pre);
 }
 
-public MRESReturn OnStartActionPre(Handle hReturn, Handle hParams)
-{
-	if(IsAllSurvivorsAlive())
-	{
-		KillAllDeathModels();
-		DHookSetReturn(hReturn, 0);
-		return MRES_Supercede;
+public void OnMapEnd() {
+	for (int i = 1; i <= MaxClients; i++)
+		g_aDeathModel[i].Clear();
+}
+
+public void OnClientDisconnect(int client) {
+	g_aDeathModel[client].Clear();
+}
+
+void Event_RoundEnd(Event event, const char[] name, bool dontBroadcast) {
+	OnMapEnd();
+}
+
+void Event_BotPlayerReplace(Event event, char[] name, bool dontBroadcast) {
+	int player = GetClientOfUserId(event.GetInt("player"));
+	if (!player || !IsClientInGame(player) || GetClientTeam(player) != 2) 
+		return;
+
+	int bot = GetClientOfUserId(event.GetInt("bot"));
+	if (bot) {
+		if (!g_aDeathModel[bot].Length)
+			g_aDeathModel[player].Clear();
+		else {
+			ArrayList aTempArray = g_aDeathModel[player];
+			g_aDeathModel[player] = g_aDeathModel[bot];
+			g_aDeathModel[bot] = aTempArray;
+		}
+
+		g_aDeathModel[bot].Clear();
 	}
+}
+
+void Event_PlayerBotReplace(Event event, char[] name, bool dontBroadcast) {
+	int bot = GetClientOfUserId(event.GetInt("bot"));
+	if (!bot || !IsClientInGame(bot) || GetClientTeam(bot) != 2)
+		return;
+
+	int player = GetClientOfUserId(event.GetInt("player"));
+	if (player) {
+		if (!g_aDeathModel[player].Length)
+			g_aDeathModel[bot].Clear();
+		else {
+			ArrayList aTempArray = g_aDeathModel[bot];
+			g_aDeathModel[bot] = g_aDeathModel[player];
+			g_aDeathModel[player] = aTempArray;
+		}
+
+		g_aDeathModel[player].Clear();
+	}
+}
+
+public void OnEntityCreated(int entity, const char[] classname) {
+	if (classname[0] != 'w' || strcmp(classname[7], "defibrillator", false) != 0)
+	 	return;
+
+	g_dhOnStartAction.HookEntity(Hook_Pre, entity, DH_CItemDefibrillator_OnStartAction_Pre);
+	g_dhOnActionComplete.HookEntity(Hook_Pre, entity, DH_CItemDefibrillator_OnActionComplete_Pre);
+	g_dhOnActionComplete.HookEntity(Hook_Post, entity, DH_CItemDefibrillator_OnActionComplete_Post);
+}
+
+
+MRESReturn DD_CSurvivorDeathModel_Create_Pre(int pThis) {
+	g_iTempClient = pThis;
 	return MRES_Ignored;
 }
 
-int g_iTempClient;
-public MRESReturn DeathModelCreatePost(int pThis, Handle hReturn)
-{
-	int iDeathModel = DHookGetReturn(hReturn);
-	if(!iDeathModel)
+MRESReturn DD_CSurvivorDeathModel_Create_Post(int pThis, DHookReturn hReturn) {
+	int deathModel = hReturn.Value;
+	if (!deathModel)
 		return MRES_Ignored;
-	
+
+	if (!IsClientInGame(g_iTempClient))
+		return MRES_Ignored;
+
 	float vPos[3];
 	GetClientAbsOrigin(g_iTempClient, vPos);
-	
-	TeleportEntity(iDeathModel, vPos, NULL_VECTOR, NULL_VECTOR);
-	
-	g_iDeathModelOwner[iDeathModel] = GetClientUserId(g_iTempClient);
+	TeleportEntity(deathModel, vPos, NULL_VECTOR, NULL_VECTOR);
 
-	Call_StartForward(g_hForward_SurvivorDeathModelCreated);
+	g_aDeathModel[g_iTempClient].Push(EntIndexToEntRef(deathModel));
+
+	Call_StartForward(g_fwdSurvivorDeathModelCreated);
 	Call_PushCell(g_iTempClient);
-	Call_PushCell(iDeathModel);
+	Call_PushCell(deathModel);
 	Call_Finish();
 
 	return MRES_Ignored;
 }
 
-public MRESReturn DeathModelCreatePre(int pThis)
-{
-	g_iTempClient = pThis;
-	
+MRESReturn DH_CItemDefibrillator_OnStartAction_Pre(DHookReturn hReturn, DHookParam hParams) {
+	int deathModel = hParams.Get(3);
+	if (!deathModel || !IsValidEntity(deathModel))
+		return MRES_Ignored;
+
+	if (AllSurAlive()) {
+		RemoveAll();
+		hReturn.Value = 0;
+		return MRES_Supercede;
+	}
+
+	if (!FindOwner(EntIndexToEntRef(deathModel))) {
+		RemoveEntity(deathModel);
+		hReturn.Value = 0;
+		return MRES_Supercede;
+	}
+
 	return MRES_Ignored;
 }
 
-public void OnEntityDestroyed(int iEntity)
-{
-	if(iEntity < 1)
-		return;
-	
-	g_iDeathModelOwner[iEntity] = 0;
-}
+MRESReturn DH_CItemDefibrillator_OnActionComplete_Pre(DHookReturn hReturn, DHookParam hParams) {
+	int deathModel = hParams.Get(2);
+	if (!deathModel || !IsValidEntity(deathModel))
+		return MRES_Ignored;
 
-int ConvertToInternalCharacter(int iChar)
-{
-	switch(iChar)
-	{
-		case 4:
-		{
-			return 0;
-		}
-		case 5:
-		{
-			return 1;
-		}
-		case 6:
-		{
-			return 3;
-		}
-		case 7:
-		{
-			return 2;
-		}
-		case 9:
-		{
-			return 8;
-		}
+	if (AllSurAlive()) {
+		RemoveAll();
+		hReturn.Value = 0;
+		return MRES_Supercede;
 	}
-	return iChar;// some people set survivors to 8 or 9 index so revive them too
+
+	if (!FindOwner(EntIndexToEntRef(deathModel))) {
+		RemoveEntity(deathModel);
+		hReturn.Value = 0;
+		return MRES_Supercede;
+	}
+	
+	g_bOnActionComplete = true;
+	g_iDeathModel = EntIndexToEntRef(deathModel);
+	return MRES_Ignored;
 }
 
-bool IsAllSurvivorsAlive()
-{
-	for(int i = 1; i <= MaxClients; i++)// rare case it could happen
-	{
-		if(IsClientInGame(i) && !IsPlayerAlive(i) && GetClientTeam(i) == 2)
-		{
+MRESReturn DH_CItemDefibrillator_OnActionComplete_Post(DHookReturn hReturn, DHookParam hParams) {
+	if (AllSurAlive())
+		RemoveAll();
+	else if (g_iOwner)
+		Remove(g_iOwner);
+
+	g_iOwner = 0;
+	g_iDeathModel = 0;
+	g_bOnActionComplete = false;
+	return MRES_Ignored;
+}
+
+MRESReturn DD_CTerrorPlayer_GetPlayerByCharacter_Post(DHookReturn hReturn, DHookParam hParams) {
+	if (!g_bOnActionComplete)
+		return MRES_Ignored;
+
+	g_iOwner = FindOwner(g_iDeathModel);
+	if (!g_iOwner) {
+		if (EntRefToEntIndex(g_iDeathModel) != INVALID_ENT_REFERENCE)
+			RemoveEntity(g_iDeathModel);
+
+		hReturn.Value = 0;
+		return MRES_Supercede;
+	}
+
+	hReturn.Value = g_iOwner;
+	return MRES_Supercede;
+}
+
+int FindOwner(int deathModelRef) {
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsClientInGame(i) && GetClientTeam(i) == 2 && !IsPlayerAlive(i) && g_aDeathModel[i].FindValue(deathModelRef) != -1)
+			return i;
+	}
+	return 0;
+}
+
+bool AllSurAlive() {
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsClientInGame(i) && GetClientTeam(i) == 2 && !IsPlayerAlive(i))
 			return false;
-		}
 	}
 	return true;
 }
 
-void KillAllDeathModels()
-{
-	int i = INVALID_ENT_REFERENCE;
-	while((i = FindEntityByClassname(i, "survivor_death_model")) != INVALID_ENT_REFERENCE)
-	{
-		AcceptEntityInput(i, "Kill");
+void Remove(int client) {
+	int entRef;
+	int count = g_aDeathModel[client].Length;
+	for (int i; i < count; i++) {
+		if (EntRefToEntIndex((entRef = g_aDeathModel[client].Get(i))) != INVALID_ENT_REFERENCE)
+			RemoveEntity(entRef);
 	}
+
+	g_aDeathModel[client].Clear();
+}
+
+void RemoveAll() {
+	int entity = MaxClients + 1;
+	while ((entity = FindEntityByClassname(entity, "survivor_death_model")) != INVALID_ENT_REFERENCE)
+		RemoveEntity(entity);
+
+	for (entity = 1; entity <= MaxClients; entity++)
+		g_aDeathModel[entity].Clear();
 }

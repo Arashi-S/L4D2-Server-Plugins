@@ -1,10 +1,3 @@
-/*
- *
- *	1:野生作者小改,闲置的玩家也能看到传送或处死倒计时等提示和听到倒计时声音了.
- *
- *
- */
-
 #pragma semicolon 1
 #pragma newdecls required
 #include <sourcemod>
@@ -15,7 +8,7 @@
 #define PLUGIN_NAME					"SafeArea Teleport"
 #define PLUGIN_AUTHOR				"sorallll"
 #define PLUGIN_DESCRIPTION			""
-#define PLUGIN_VERSION				"1.2.0"
+#define PLUGIN_VERSION				"1.2.1"
 #define PLUGIN_URL					"https://forums.alliedmods.net/showthread.php?p=2766514#post2766514"
 
 #define DEBUG						0
@@ -29,7 +22,6 @@
 
 Handle
 	g_hTimer,
-	g_hSDK_CTerrorPlayer_CleanupPlayerState,
 	g_hSDK_TerrorNavMesh_GetLastCheckpoint,
 	g_hSDK_Checkpoint_ContainsArea,
 	g_hSDK_Checkpoint_GetLargestArea,
@@ -154,15 +146,15 @@ public void OnPluginStart() {
 
 	CreateConVar("safearea_teleport_version", PLUGIN_VERSION, "SafeArea Teleport plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
-	g_hCvarAllow =			CreateConVar("st_allow",		"1",	"启用传送幸存者插件? 0=禁用, 1=启用.", CVAR_FLAGS);
-	g_hCvarModes =			CreateConVar("st_modes",		"",		"在那些游戏模式中打开插件,用逗号分隔(无空格).（留空=全部).", CVAR_FLAGS);
-	g_hCvarModesOff =		CreateConVar("st_modes_off",	"",		"在那些游戏模式中关闭插件,用逗号分隔(无空格).（留空=没有).", CVAR_FLAGS);
-	g_hCvarModesTog =		CreateConVar("st_modes_tog",	"1",	"在那些游戏模式中打开插件(将数字相加). 0=全部, 1=战役, 2=生存, 4=对抗,8=清道夫.", CVAR_FLAGS);
+	g_hCvarAllow =			CreateConVar("st_allow",		"1",	"0=Plugin off, 1=Plugin on.", CVAR_FLAGS);
+	g_hCvarModes =			CreateConVar("st_modes",		"",		"Turn on the plugin in these game modes, separate by commas (no spaces). (Empty = all).", CVAR_FLAGS);
+	g_hCvarModesOff =		CreateConVar("st_modes_off",	"",		"Turn off the plugin in these game modes, separate by commas (no spaces). (Empty = none).", CVAR_FLAGS);
+	g_hCvarModesTog =		CreateConVar("st_modes_tog",	"0",	"Turn on the plugin in these game modes. 0=All, 1=Coop, 2=Survival, 4=Versus, 8=Scavenge. Add numbers together.", CVAR_FLAGS);
 
-	g_hSafeAreaFlags =		CreateConVar("st_enable",		"3",	"在什么情况下启用传送? 1=终点安全屋, 2=终点救援车, 3=两者.", CVAR_FLAGS);
-	g_hSafeAreaType =		CreateConVar("st_type",			"1",	"倒计时结束后没有进入安全区的幸存者如何处理. 1=传送, 2=处死.", CVAR_FLAGS);
-	g_hSafeAreaTime =		CreateConVar("st_time",			"18",	"设置倒计时的时间/秒.", CVAR_FLAGS);
-	g_hMinSurvivorPercent =	CreateConVar("st_min_percent",	"75",	"有多少幸存者进入终点安全区后开始倒计时(百分比).", CVAR_FLAGS);
+	g_hSafeAreaFlags =		CreateConVar("st_enable",		"3",	"Where is it enabled? (1=Safe Room, 2=Rescue Vehicle, 3=Both)", CVAR_FLAGS);
+	g_hSafeAreaType =		CreateConVar("st_type",			"1",	"How to deal with players who have not entered the destination safe area (1=teleport, 2=slay)", CVAR_FLAGS);
+	g_hSafeAreaTime =		CreateConVar("st_time",			"18",	"How many seconds to count down before processing", CVAR_FLAGS);
+	g_hMinSurvivorPercent =	CreateConVar("st_min_percent",	"75",	"What percentage of the survivors start the countdown when they reach the finish area", CVAR_FLAGS);
 	
 	g_hCvarMPGameMode = FindConVar("mp_gamemode");
 	g_hCvarMPGameMode.AddChangeHook(CvarChanged_Allow);
@@ -176,7 +168,7 @@ public void OnPluginStart() {
 	g_hSafeAreaTime.AddChangeHook(CvarChanged);
 	g_hMinSurvivorPercent.AddChangeHook(CvarChanged);
 
-	//AutoExecConfig(true, "safearea_teleport");
+	//AutoExecConfig(true);
 
 	RegAdminCmd("sm_warpend", cmdWarpEnd, ADMFLAG_RCON, "Send all survivors to the destination safe area");
 	RegAdminCmd("sm_st", cmdSt, ADMFLAG_ROOT, "Test");
@@ -195,7 +187,7 @@ void OnFinaleStart(const char[] output, int caller, int activator, float delay) 
 		if (g_bTranslation)
 			PrintToChatAll("\x05%t", "IsSacrificeFinale");
 		else
-			PrintToChatAll("\x05该地图是牺牲结局, 已关闭传送功能");
+			PrintToChatAll("\x05该地图是牺牲结局, 已关闭当前功能");
 
 		int entRef;
 		int count = g_aRescueVehicle.Length;
@@ -485,7 +477,7 @@ void HookEndAreaEntity() {
 			if (g_bTranslation)
 				PrintToChatAll("\x05%t", "IsSacrificeFinale");
 			else
-				PrintToChatAll("\x05该地图是牺牲结局, 已关闭传送功能");
+				PrintToChatAll("\x05该地图是牺牲结局, 已关闭当前功能");
 		}
 		else {
 			entity = MaxClients + 1;
@@ -603,7 +595,7 @@ void  OnStartTouch(const char[] output, int caller, int activator, float delay) 
 			if (g_bTranslation)
 				PrintHintToSurvivor("%t", "SurvivorReached", reached, value);
 			else
-				PrintHintToSurvivor("%d名生还者已到达终点(需要%d名)", reached, value);
+				PrintHintToSurvivor("%d名生还者已到达终点区域(需要%d名)", reached, value);
 		}
 		return;
 	}
@@ -686,7 +678,7 @@ void OnEndTouch(const char[] output, int caller, int activator, float delay) {
 			if (g_bTranslation)
 				PrintHintToSurvivor("%t", "SurvivorReached", reached, value);
 			else
-				PrintHintToSurvivor("%d名生还者已到达终点(需要%d名)", reached, value);
+				PrintHintToSurvivor("%d名生还者已到达终点区域(需要%d名)", reached, value);
 		}
 		return;
 	}
@@ -710,7 +702,7 @@ Action tmrCountdown(Handle timer) {
 			}
 		}
 		else
-			PrintHintToSurvivor("%d 秒后%s未进入终点的生还者", g_iCountdown--, g_iSafeAreaType == 1 ? "传送" : "处死");
+			PrintHintToSurvivor("%d 秒后%s未进入终点区域的生还者", g_iCountdown--, g_iSafeAreaType == 1 ? "传送" : "处死");
 
 		EmitSoundToSurvivor(SOUND_COUNTDOWN, SOUND_FROM_PLAYER, SNDCHAN_STATIC, SNDLEVEL_NORMAL, SND_NOFLAGS, SNDVOL_NORMAL, SNDPITCH_NORMAL, -1, NULL_VECTOR, NULL_VECTOR, true, 0.0);
 	}
@@ -723,33 +715,13 @@ Action tmrCountdown(Handle timer) {
 	return Plugin_Continue;
 }
 
-void PrintHintToSurvivor(const char[] format, any ...) 
-{
+void PrintHintToSurvivor(const char[] format, any ...) {
 	static char buffer[254];
-	for (int i = 1; i <= MaxClients; i++) 
-	{
-		if (IsClientInGame(i) && GetClientTeam(i) == 2) 
-		{
-			int iBot = IsClientIdle(i);
-		
-			if(iBot != 0)
-			{
-				if(!IsFakeClient(iBot))
-				{
-					SetGlobalTransTarget(iBot);
-					VFormat(buffer, sizeof buffer, format, 2);
-					PrintHintText(iBot, "%s", buffer);
-				}
-			}
-			else
-			{
-				if(!IsFakeClient(i))
-				{
-					SetGlobalTransTarget(i);
-					VFormat(buffer, sizeof buffer, format, 2);
-					PrintHintText(i, "%s", buffer);
-				}
-			}
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) == 2) {
+			SetGlobalTransTarget(i);
+			VFormat(buffer, sizeof buffer, format, 2);
+			PrintHintText(i, "%s", buffer);
 		}
 	}
 }
@@ -810,7 +782,7 @@ void TeleportToEndArea() {
 		int i = 1;
 		for (; i <= MaxClients; i++) {
 			if (IsClientInGame(i) && GetClientTeam(i) == 3 && IsPlayerAlive(i)) {
-				SDKCall(g_hSDK_CTerrorPlayer_CleanupPlayerState, i);
+				L4D_CleanupPlayerState(i);
 				ForcePlayerSuicide(i);
 			}
 		}
@@ -912,27 +884,9 @@ void EmitSoundToSurvivor(const char[] sample,
 {
 	int[] clients = new int[MaxClients];
 	int total;
-	for (int i = 1; i <= MaxClients; i++) 
-	{
-		if (IsClientInGame(i) && GetClientTeam(i) == 2)
-		{
-			int iBot = IsClientIdle(i);
-		
-			if(iBot != 0)
-			{
-				if(!IsFakeClient(iBot))
-				{
-					clients[total++] = iBot;
-				}
-			}
-			else
-			{
-				if(!IsFakeClient(i))
-				{
-					clients[total++] = i;
-				}
-			}
-		}
+	for (int i = 1; i <= MaxClients; i++) {
+		if (IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) == 2)
+			clients[total++] = i;
 	}
 
 	if (total) {
@@ -966,48 +920,42 @@ void InitData() {
 	if (g_iOff_m_flow == -1)
 		SetFailState("Failed to find offset: m_flow");
 
-	StartPrepSDKCall(SDKCall_Player);
-	if (!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CTerrorPlayer::CleanupPlayerState"))
-		SetFailState("Failed to find signature: CTerrorPlayer::CleanupPlayerState");
-	if (!(g_hSDK_CTerrorPlayer_CleanupPlayerState = EndPrepSDKCall()))
-		SetFailState("Failed to create SDKCall: CTerrorPlayer::CleanupPlayerState");
-
 	StartPrepSDKCall(SDKCall_Raw);
 	if (!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "TerrorNavMesh::GetLastCheckpoint"))
-		SetFailState("Failed to find signature: TerrorNavMesh::GetLastCheckpoint");
+		SetFailState("Failed to find signature: \"TerrorNavMesh::GetLastCheckpoint\"");
 	PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
 	if (!(g_hSDK_TerrorNavMesh_GetLastCheckpoint = EndPrepSDKCall()))
-		SetFailState("Failed to create SDKCall: TerrorNavMesh::GetLastCheckpoint");
+		SetFailState("Failed to create SDKCall: \"TerrorNavMesh::GetLastCheckpoint\"");
 
 	StartPrepSDKCall(SDKCall_Raw);
 	if (!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "Checkpoint::ContainsArea"))
-		SetFailState("Failed to find signature: Checkpoint::ContainsArea");
+		SetFailState("Failed to find signature: \"Checkpoint::ContainsArea\"");
 	PrepSDKCall_AddParameter(SDKType_PlainOldData, SDKPass_Plain);
 	PrepSDKCall_SetReturnInfo(SDKType_Bool, SDKPass_Plain);
 	if (!(g_hSDK_Checkpoint_ContainsArea = EndPrepSDKCall()))
-		SetFailState("Failed to create SDKCall: Checkpoint::ContainsArea");
+		SetFailState("Failed to create SDKCall: \"Checkpoint::ContainsArea\"");
 
 	StartPrepSDKCall(SDKCall_Raw);
 	if (!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "Checkpoint::GetLargestArea"))
-		SetFailState("Failed to find signature: Checkpoint::GetLargestArea");
+		SetFailState("Failed to find signature: \"Checkpoint::GetLargestArea\"");
 	PrepSDKCall_SetReturnInfo(SDKType_PlainOldData, SDKPass_Plain);
 	if (!(g_hSDK_Checkpoint_GetLargestArea = EndPrepSDKCall()))
-		SetFailState("Failed to create SDKCall: Checkpoint::GetLargestArea");
+		SetFailState("Failed to create SDKCall: \"Checkpoint::GetLargestArea\"");
 
 	StartPrepSDKCall(SDKCall_GameRules);
 	if (!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CDirectorChallengeMode::FindRescueAreaTrigger"))
-		SetFailState("Failed to find signature: CDirectorChallengeMode::FindRescueAreaTrigger");
+		SetFailState("Failed to find signature: \"CDirectorChallengeMode::FindRescueAreaTrigger\"");
 	PrepSDKCall_SetReturnInfo(SDKType_CBaseEntity, SDKPass_Pointer);
 	if (!(g_hSDK_CDirectorChallengeMode_FindRescueAreaTrigger = EndPrepSDKCall()))
-		SetFailState("Failed to create SDKCall: CDirectorChallengeMode::FindRescueAreaTrigger");
+		SetFailState("Failed to create SDKCall: \"CDirectorChallengeMode::FindRescueAreaTrigger\"");
 
 	StartPrepSDKCall(SDKCall_Entity);
 	if (!PrepSDKCall_SetFromConf(hGameData, SDKConf_Signature, "CBaseTrigger::IsTouching"))
-		SetFailState("Failed to find signature: CBaseTrigger::IsTouching");
+		SetFailState("Failed to find signature: \"CBaseTrigger::IsTouching\"");
 	PrepSDKCall_AddParameter(SDKType_CBaseEntity, SDKPass_Pointer);
 	PrepSDKCall_SetReturnInfo(SDKType_Bool, SDKPass_Plain);
 	if (!(g_hSDK_CBaseTrigger_IsTouching = EndPrepSDKCall()))
-		SetFailState("Failed to create SDKCall: CBaseTrigger::IsTouching");
+		SetFailState("Failed to create SDKCall: \"CBaseTrigger::IsTouching\"");
 
 	delete hGameData;
 }
@@ -1040,13 +988,4 @@ bool IsPlayerInEndArea(int client, bool checkArea = true) {
 		return IsValidEntRef(g_iRescueVehicle) && SDKCall(g_hSDK_CBaseTrigger_IsTouching, g_iRescueVehicle, client);
 	
 	return IsValidEntRef(g_iChangelevel) && SDKCall(g_hSDK_CBaseTrigger_IsTouching, g_iChangelevel, client);
-}
-
-//返回电脑幸存者对应的玩家.
-stock int IsClientIdle(int client)
-{
-	if (!HasEntProp(client, Prop_Send, "m_humanSpectatorUserID"))
-		return 0;
-
-	return GetClientOfUserId(GetEntProp(client, Prop_Send, "m_humanSpectatorUserID"));
 }
