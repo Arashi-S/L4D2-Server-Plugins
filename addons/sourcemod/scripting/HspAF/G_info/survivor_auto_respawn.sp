@@ -425,7 +425,7 @@ public void OnPluginStart() {
 	for (int i; i < MAX_SLOTS; i++)
 		g_Weapon[i].cvFlags.AddChangeHook(CvarChanged_Weapon);
 		
-	AutoExecConfig(true);
+	//AutoExecConfig(true);
 
 	RegConsoleCmd("sm_respawn", cmdRespawn, "复活");
 }
