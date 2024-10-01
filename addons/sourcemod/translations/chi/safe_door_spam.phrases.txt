@@ -22,7 +22,7 @@
 
 	"Movement_Blocked"
 	{
-		"chi"		"{olive}开局锁定: {white}在 %d后准许移动"
+		"chi"		"{olive}开局锁定: {white}在 %d秒后准许移动"
 	}
 
 	"Movement_Allowed"
