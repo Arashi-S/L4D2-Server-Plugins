@@ -96,7 +96,7 @@ public Action:OnEntityUse(entity, activator, caller, UseType:type, Float:value)
 {
 	if (type ==Use_Toggle)
 	{
-		PrintToChat(caller,"\x01[\x03MMG\x01]\x03You can move the Minigun by \x04Aiming the minigun\x03 and Pressing \x04Shift + Mouse Right Click \x03Button Together");
+		PrintToChat(caller,"\x01[\x03MMG\x01]\x03你可以通过 \x04瞄准重机枪\x03 并按下 \x04Shift 并 单击鼠标右键 \x03来移动它");
 	}
 }
 stock FindEntityByClassname2(startEnt, const String:classname[])
