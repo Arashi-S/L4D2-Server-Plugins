@@ -1,3 +1,11 @@
+/*
+ *
+ *	v1.0.2
+ *
+ *	1:修复使用删除所有女巫功能后会提示地图没有女巫.
+ *	2:修复使用删除全部女巫后不能重新打开菜单的问题.
+ *
+ */
 #pragma semicolon 1
 //強制1.7以後的新語法
 #pragma newdecls required
@@ -5,7 +13,7 @@
 #include <adminmenu>
 #include <dhooks>
 
-#define PLUGIN_VERSION	"1.0.1"
+#define PLUGIN_VERSION	"1.0.2"
 
 ArrayList ListArray;
 
@@ -61,7 +69,7 @@ public void OnPluginStart()
 	if (LibraryExists("adminmenu") && ((topmenu = GetAdminTopMenu()) != null))
 		OnAdminMenuReady(topmenu);
 	ListArray = new ArrayList();
-	RegConsoleCmd("sm_remove", MenuRemoveWitch, "管理员菜单删除女巫.");
+	RegConsoleCmd("sm_witch", MenuRemoveWitch, "管理员菜单删除女巫.");
 }
  
 public void OnAdminMenuReady(Handle aTopMenu)
@@ -77,7 +85,7 @@ public void OnAdminMenuReady(Handle aTopMenu)
 	if (objOtherMenu == INVALID_TOPMENUOBJECT)
 		objOtherMenu = AddToTopMenu(g_hTopMenu, "OtherFeatures", TopMenuObject_Category, MenuOtherHandler, INVALID_TOPMENUOBJECT);
 	
-	hAddToTopMenu= AddToTopMenu(g_hTopMenu,"sm_remove",TopMenuObject_Item,OtherMenuHandler,objOtherMenu,"sm_remove",ADMFLAG_ROOT);
+	hAddToTopMenu= AddToTopMenu(g_hTopMenu,"sm_witch",TopMenuObject_Item,OtherMenuHandler,objOtherMenu,"sm_witch",ADMFLAG_ROOT);
 }
 
 public void MenuOtherHandler(Handle topmenu, TopMenuAction action, TopMenuObject object_id, int param, char[] buffer, int maxlength)
@@ -102,14 +110,14 @@ public void OtherMenuHandler(Handle topmenu, TopMenuAction action, TopMenuObject
 	else if (action == TopMenuAction_SelectOption)
 	{
 		if (object_id == hAddToTopMenu)
-			GetWitchMenu(param, 0, true);
+			GetWitchMenu(param, 0, true, true);
 	}
 }
 
 public Action MenuRemoveWitch(int client, int args)
 {
 	if(bCheckClientAccess(client))
-		GetWitchMenu(client, 0, false);
+		GetWitchMenu(client, 0, false, true);
 	else
 		PrintToChat(client, "\x04[提示]\x05你无权使用此指令.");
 	return Plugin_Handled;
@@ -122,7 +130,7 @@ bool bCheckClientAccess(int client)
 	return false;
 }
 
-void GetWitchMenu(int client, int index, bool bButton = false)
+void GetWitchMenu(int client, int index, bool bButton = false, bool bPrintTo = false)
 {
 	IsWitchTotalNumber();//循环获取所有女巫存到数组里.
 	int iNumber = ListArray.Length;//获取数组的数量(也可以算是女巫的数量).
@@ -132,7 +140,10 @@ void GetWitchMenu(int client, int index, bool bButton = false)
 		Menu menu = new Menu(Menu_HandlerWitchMenu);
 		Format(line, sizeof(line), "选择女巫:");
 		SetMenuTitle(menu, "%s", line);
-		menu.AddItem("全部", "删除全部");
+		IntToString(bButton, sData[1], sizeof(sData[]));
+		strcopy(sData[2], sizeof(sData[]), "全部");
+		ImplodeStrings(sData, sizeof(sData), "|", sInfo, sizeof(sInfo));//打包字符串.
+		menu.AddItem(sInfo, "删除全部");
 		for (int i = 0; i < iNumber; i++)
 		{
 			int iWitchId = ListArray.Get(i);
@@ -150,7 +161,8 @@ void GetWitchMenu(int client, int index, bool bButton = false)
 	{
 		if (g_hTopMenu != null && bButton)
 			g_hTopMenu.Display(client, TopMenuPosition_LastCategory);
-		PrintToChat(client, "\x04[提示]\x05当前地图没有发现女巫.");
+		if(bPrintTo == true)
+			PrintToChat(client, "\x04[提示]\x05当前地图没有发现女巫.");
 	}
 }
 
@@ -181,14 +193,11 @@ int Menu_HandlerWitchMenu(Menu menu, MenuAction action, int client, int itemNum)
 		{
 			char sItem[64], sInfo[3][32];
 			menu.GetItem(itemNum, sItem, sizeof(sItem));
-			
 			ExplodeString(sItem, "|", sInfo, sizeof(sInfo), sizeof(sInfo[]));//拆分字符串.
-			if(strcmp(sItem, "全部", false) == 0)//对比字符串.
+
+			if(strcmp(sInfo[2], "全部", false) == 0)//对比字符串.
 			{
-				if(IsRemoveAllWitch())
-					PrintToChat(client, "\x04[提示]\x05已删除全部\x03女巫\x05.");
-				else
-					PrintToChat(client, "\x04[提示]\x05地图里没有女巫\x05.");
+				IsRemoveAllWitch(client);
 				if (g_hTopMenu != null && view_as<bool>(StringToInt(sInfo[1])))
 					g_hTopMenu.Display(client, TopMenuPosition_LastCategory);
 			}
@@ -208,7 +217,7 @@ int Menu_HandlerWitchMenu(Menu menu, MenuAction action, int client, int itemNum)
 				//必须延迟至少0.1秒重新打开菜单.
 				DataPack hPack;
 				CreateDataTimer(0.1, DelayOpeningMenu, hPack, TIMER_FLAG_NO_MAPCHANGE);
-				hPack.WriteCell(client);
+				hPack.WriteCell(GetClientUserId(client));
 				hPack.WriteCell(menu.Selection);
 				hPack.WriteCell(view_as<bool>(StringToInt(sInfo[1])));
 			}
@@ -230,26 +239,22 @@ void IsWitchTotalNumber()
 		ListArray.Push(inf);
 }
 
-bool IsRemoveAllWitch()
+void IsRemoveAllWitch(int client)
 {
 	int inf = -1;
-	bool bBoolean = false;
 	while ((inf = FindEntityByClassname(inf, "witch")) != INVALID_ENT_REFERENCE)
-	{
 		RemoveEntity(inf);
-		bBoolean = true;
-	}
-	return bBoolean;
+	PrintToChat(client, "\x04[提示]\x05已删除全部\x03女巫\x05.");
 }
 
 public Action DelayOpeningMenu(Handle Timer, DataPack hPack)
 {
 	hPack.Reset();
-	int client = hPack.ReadCell();
+	int client = GetClientOfUserId(hPack.ReadCell());
 	int iSelection = hPack.ReadCell();
 	bool bButton = hPack.ReadCell();
 	if(IsValidClient(client))
-		GetWitchMenu(client, iSelection, bButton);//重新打开菜单.
+		GetWitchMenu(client, iSelection, bButton, false);//重新打开菜单.
 	return Plugin_Continue;
 }
 
