@@ -53,14 +53,14 @@
 	"Usage Rope" 
 	{
 		"en"		"You Pickup a Rope, zoom key to shoot it\nctrl or shift adjust when on air"
-		"chi"		"你捡起了一条绳子\n在空中使用瞄准键射出\nCtrl或Shift键微调"
-		"zho"		"你捡起了一条绳子\n在空中使用瞄准键射出\nCtrl或Shift键微调"
+		"chi"		"你捡起了一条绳子\n在空中使用瞄准键射出\nCtrl或Shift键收紧或拉长"
+		"zho"		"你捡起了一条绳子\n在空中使用瞄准键射出\nCtrl或Shift键收紧或拉长"
 	}
 	"Usage Hook" 
 	{
 		"en"		"You Pickup a Hook, shove to shoot it when on air\nctrl key to adjust"
-		"chi"		"你捡起了一条钩爪\n在空中使用右键射出\nCtrl键以微调"
-		"zho"		"你捡起了一条钩爪\n在空中使用右键射出\nCtrl键以微调"
+		"chi"		"你捡起了一条钩爪\n在空中使用右键射出\n空格键键收紧"
+		"zho"		"你捡起了一条钩爪\n在空中使用右键射出\n空格键键收紧"
 	}
 	"Pickup Announce" 
 	{
