@@ -1,73 +1,81 @@
+// 中文說明
+// -----
+// center: 廣告文字顯示於螢幕中央
+// chat: 廣告文字顯示於聊天框
+// hint: 廣告文字顯示於螢幕下方黑底白字框
+// menu: 廣告文字顯示於Menu選單
+//
+// -----
+//	以下顏色只支援於 L4D1/L4D2:
+//	 - {default}	(白色)
+//	 - {green}		(橘色)
+//	 - {olive}		(綠色)
+//	 - {lightgreen}	(淺綠色)
+//	 - {red}		(紅色) - 特感隊伍要有人或bot在才會顯示紅色，否則顯示橘色
+//	 - {blue}		(藍色) - 人類隊伍要有人或bot在才會顯示藍色，否則顯示橘色
+//	 注意事項: 藍色、紅色、淺綠色，這三種顏色不可出現在同一句話裡
+//
+
 "Advertisements"
 {
-	"1"
-	{
-		"type"		"S"
-		"text"		"{LIGHTGREEN}[本章节地图]: {GREEN}{CURRENTMAP} \n{LIGHTGREEN}[服务器时间]: {GREEN}{TIME24} - {DATE}"
-	}
+    "1"
+    {
+         "chat"			"{LIGHTGREEN}[本章节地图]: {green}{CURRENTMAP} \n{LIGHTGREEN}[服务器时间]: {green}{TIME24} - {DATE}"
+    }
 	"2"
-	{
-		"type"		"S"
-		"text"		"{LIGHTGREEN}可以尝试对动态的{GREEN}汽车持续输出{LIGHTGREEN}来尝试打爆汽车"
-	}
+    {
+        "chat"			"{green}可尝试攻击{blue}动态汽车{green}来打爆它"
+    }
 	"3"
-	{
-		"type"		"S"
-		"text"		"{GREEN}!Afk{LIGHTGREEN} 闲置 {GREEN}!join{LIGHTGREEN} 加入幸存者{GREEN}!run {LIGHTGREEN} 润出服务器"
-	}
+    {
+        "chat"			"{green}@Afk{blue}闲置，{green}@join{blue}加入游戏{green}@run{blue}离开服务器"
+    }
 	"4"
-	{
-		"type"		"S"
-		"text"		"{LIGHTGREEN}使用指令 {GREEN}!drop{LIGHTGREEN}，来丢弃当前持有武器 "
-	}
+    {
+        "chat"			"{blue}使用聊天框命令{green}@drop{blue}或双击{green}喷漆键{blue}丢掉当前武器"
+    }
 	"5"
-	{
-		"type"		"S"
-		"text"		"{GREEN}欢迎加入我服的QQ群：{LIGHTGREEN} 811{GREEN} 940{LIGHTGREEN} 760"
-	}
-	"6"
-	{
-		"type"		"S"
-		"text"		"{LIGHTGREEN}按 Z 键 使用{GREEN} 看 {LIGHTGREEN}来标记物品/地点/特感，{GREEN}让盲人队友更快发现它们"
-	}
+    {
+        "chat"			"{blue}欢迎加入我服QQ群：{green}811 {{default}}940 {olive}760"
+    }
+    "6"
+    {
+         "chat"			"{blue}按{green} Z {blue}键使用{green} 看 {blue}来标记物品/地点/特感，{green}让盲人队友更快发现它们"
+    }
 	"7"
-	{
-		"type"		"S"
-		"text"		"{LIGHTGREEN}使用胆汁罐时 {GREEN}请不要砸在你队友的头上"
-	}
+    {
+        "chat"			"{blue}在使用胆汁罐时，{green}当心砸到你队友的身上"
+    }
 	"8"
-	{
-		"type"		"S"
-		"text"		"{GREEN}输入{LIGHTGREEN} !chmap{GREEN}来更换地图{LIGHTGREEN} 在旁观时输入{LIGHTGREEN} !teams{GREEN}打开团队菜单获得更好的观战体验{GREEN}"
-	}
+    {
+        "chat"			"{blue}输入聊天框命令{green}@menu{blue}打开玩家命令菜单"
+    }
 	"9"
-	{
-		"type"		"S"
-		"text"		"{GREEN}本服删除了{LIGHTGREEN}挂边的判定{GREEN}容易脚滑的老屁股们{LIGHTGREEN}别再指望队友了"
-	}
+    {
+        "chat"			"{blue}输入聊天框命令{green}@chmap更换地图，{blue}在旁观时输入{green}@teams获得更好的旁观体验"
+    }
 	"10"
-	{
-		"type"		"S"
-		"text"		"{GREEN}输入{LIGHTGREEN} !3rd{GREEN}切换第三人称"
-	}
+    {
+        "chat"			"{blue}本服删除了挂边的判定，{green}容易脚滑的老屁股们别再指望队友了"
+    }
 	"11"
-	{
-		"type"		"S"
-		"text"		"{GREEN}大好人队友总是给你绿血打包？{LIGHTGREEN} 可在治疗时按{GREEN}跳跃键阻止打包"
-	}
-	"12"
-	{
-		"type"		"S"
-		"text"		"{GREEN}发现外挂玩家可以加群联系我{LIGHTGREEN} 我会尽我所能维持良好游戏环境"
-	}
-	"13"
-	{
-		"type"		"S"
-		"text"		"{GREEN}贴墙在跳跃时按{LIGHTGREEN}E{GREEN}键就可以爬墙，{LIGHTGREEN}但请不要爬的太高哦~"
-	}
-	"14"
-	{
-		"type"		"S"
-		"text"		"{GREEN}可在聊天框输入{LIGHTGREEN}!vk{GREEN}投票踢出{LIGHTGREEN}捣乱玩家"
-	}
+    {
+        "chat"			"{blue}输入聊天框命令{green}@3rd{blue}切换第三人称"
+    }
+    "12"
+    {
+        "chat"			"{blue}大好人队友总是给你{green}绿血打包？{blue}可通过在治疗时按{green}空格跳跃，{blue}阻止打包"
+    }
+    "13"
+    {
+        "chat"			"{blue}贴墙并在跳跃时{green}按E，{blue}就可以爬上墙体"
+    }
+    "14"
+    {
+        "chat"			"{blue}重复按武器对应数字键换空来拾取该槽位{green}第二件物品/武器，{blue}重复按对应数字键切换"
+    }
+    "15"
+    {
+        "chat"			"{blue}输入{green}@v{blue}发起各种投票，{blue}输入{green}@vk{blue}投票踢出捣乱玩家"
+    }
 }
