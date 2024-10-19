@@ -36,7 +36,7 @@
     }
 	"5"
     {
-        "chat"			"{blue}欢迎加入我服QQ群：{green}811 {{default}}940 {olive}760"
+        "chat"			"{blue}欢迎加入我服QQ群：{green}811 {default}940 {olive}760"
     }
     "6"
     {
