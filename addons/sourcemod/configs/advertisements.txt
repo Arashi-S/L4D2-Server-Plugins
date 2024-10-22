@@ -78,4 +78,8 @@
     {
         "chat"			"{blue}输入{green}@v{blue}发起各种投票，{blue}输入{green}@vk{blue}投票踢出捣乱玩家"
     }
+    "16"
+    {
+        "chat"			"{blue}队友太磨蹭{green}等的不耐烦？输入{blue}@dance，{green}跳舞解解压吧"
+    }
 }
