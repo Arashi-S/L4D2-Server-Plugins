@@ -70,6 +70,13 @@
 		"chi"           "救援关不刷boss?试试这个"
 	}
 
+	"sm_dance"
+	{
+		"en"            "Dance play"
+		"zho"           "跳舞"
+		"chi"           "跳舞"
+	}
+
 	"MENU"
 	{
 		"en"			"Player Menu"		
