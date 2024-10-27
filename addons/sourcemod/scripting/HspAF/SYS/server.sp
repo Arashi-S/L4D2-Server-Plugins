@@ -14,8 +14,7 @@ ConVar
 	cv_AFKtoSpec;
 
 int ChangeName[MAXPLAYERS + 1];
-StringMap g_smSteamIDs;
-bool g_bDebugMode, g_bChangeLevel;
+bool g_bChangeLevel;
 char g_sLogPath[PLATFORM_MAX_PATH];
 
 native void L4D2_ChangeLevel(const char[] map);
@@ -56,7 +55,6 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	g_smSteamIDs = new StringMap();
 	cv_ChangeName = CreateConVar("change_name_number", "3", "改名次数达到多少后踢出", FCVAR_NOTIFY, true, 0.0);
 	cv_ServerRank = CreateConVar("l4d_server_rank", "114514", "全球排名数", _, true, 0.0);
 	cv_ServerNumber = CreateConVar("l4d_server_players_number", "233", "加入服务器人数", _, true, 0.0);
@@ -67,13 +65,11 @@ public void OnPluginStart()
 
 	RegAdminCmd("sm_restartmap", RestartMap, ADMFLAG_ROOT, "立即重启当前地图");
 	RegAdminCmd("sm_restartmap5", RestartMap5, ADMFLAG_ROOT, "延迟5秒重启当前地图");
-	RegAdminCmd("sm_debug", DebugMode, ADMFLAG_ROOT, "开关调试模式");
 
 	HookUserMessage(GetUserMessageId("TextMsg"), umTextMsg, true);
 	HookEvent("server_cvar", Event_ServerCvar, EventHookMode_Pre);
 	HookEvent("round_start", Event_RoundStart, EventHookMode_Post);
 	HookEvent("player_changename", Event_PlayerChangeName);
-	HookEvent("player_disconnect", Event_PlayerDisconnect, EventHookMode_Pre);
 	HookEvent("player_team", Event_playerteam);
 
 	//AutoExecConfig(true, "server_config");
@@ -139,13 +135,6 @@ void ServerRank()
 {
 	GameRules_SetProp("m_iServerRank", GetConVarInt(cv_ServerRank), 4, 0, false);
 	GameRules_SetProp("m_iServerPlayerCount", GetConVarInt(cv_ServerNumber), 4, 0, false);
-}
-
-public void OnClientConnected(int client)
-{
-	if(IsFakeClient(client))
-		return;
-	ServerRank();
 }
 
 public void OnClientDisconnect(int client)
@@ -259,69 +248,6 @@ void ChangeLevel(const char[] map)
 		L4D2_ChangeLevel(map);
 	else
 		ServerCommand("changelevel %s", map);
-}
-
-//调试模式，感谢sorallll
-public void OnClientPostAdminCheck(int client)
-{
-	if (!g_bDebugMode || IsFakeClient(client))
-		return;
-
-	if (CheckCommandAccess(client, "", ADMFLAG_ROOT))
-		return;
-
-	char sSteamID[32];
-	GetClientAuthId(client, AuthId_Steam2, sSteamID, sizeof sSteamID);
-	if (!g_smSteamIDs.ContainsKey(sSteamID))
-		KickClient(client, "服务器状态为：故障/维护中/简略试验中，欢迎下次光临");
-}
-
-void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroadcast)
-{
-	if (!g_bDebugMode)
-		return;
-
-	int client = GetClientOfUserId(event.GetInt("userid"));
-	if (client && IsFakeClient(client))
-		return;
-
-	if (RealPlayerExist(client))
-		return;
-
-	g_bDebugMode = false;
-	g_smSteamIDs.Clear();
-}
-
-bool RealPlayerExist(int exclude)
-{
-	for (int client = 1; client <= MaxClients; client++) {
-		if (client != exclude && IsClientConnected(client) && !IsFakeClient(client))
-			return true;
-	}
-	return false;
-}
-
-Action DebugMode(int client, int args)
-{
-	if (g_bDebugMode) {
-		g_bDebugMode = false;
-		g_smSteamIDs.Clear();
-		ReplyToCommand(client, "调试模式已关闭.");
-	}
-	else {
-		char sSteamID[32];
-		for (int i = 1; i <= MaxClients; i++) {
-			if (IsClientInGame(i) && !IsFakeClient(i)) {
-				if (GetClientAuthId(i, AuthId_Steam2, sSteamID, sizeof sSteamID))
-					g_smSteamIDs.SetValue(sSteamID, true, true);
-			}
-		}
-
-		g_bDebugMode = true;
-		ReplyToCommand(client, "调试模式已开启.");
-	}
-	
-	return Plugin_Handled;
 }
 
 void Event_playerteam(Event event, const char[] name, bool dontBroadcast) 
