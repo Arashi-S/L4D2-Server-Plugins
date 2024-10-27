@@ -129,7 +129,7 @@ void setServerName()
 
 	char c_mode[32];
 	char ModeCode[MODE][32] = {"a","b","c","d","e","f","g","h","i","j","k","l","n"};
-	char ModeName[MODE][128] = {"[普通战役]","[标准型药役]","[1VHunter]","[未指定模式]","[无限火力]","[困难无限]","[药役A]","[药役B]","[药役C]","[药役D]","[单人药役]","[HT训练]","[HT x Witch]"};
+	char ModeName[MODE][128] = {"[普通战役]","[战役Max|8特40秒]","[战役Max|8特25秒]","[战役Max|16特16秒]","[维护中]","[故障]","[简略试验中]","[药役B]","[药役C]","[药役D]","[单人药役]","[HT训练]","[HT x Witch]"};
 	// char ModeName[MODE][128] = {"[a纯净模式]","[b绝境战役]","[c多特战役]","[d写专多特]","[e无限火力]","[f困难无限]","[g药役A]","[h药役B]","[i药役C]","[j药役D]","[k单人药役]","[lHT训练]","[nHTx Witch]"};
 	GetConVarString(g_hBaseModeCode, c_mode, sizeof(c_mode));
 	for (int i = 0; i < MODE; i++)
