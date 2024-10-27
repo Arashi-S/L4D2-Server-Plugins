@@ -63,8 +63,8 @@ public void OnPluginStart()
 	hPluginEnable 	= CreateConVar("l4d2_infectedhp", 				"1", 		"启用插件? 0=禁用, 1=启用.", CVAR_FLAGS);
 	hPluginTank		= CreateConVar("l4d2_infectedhp_a",				"3",		"启用坦克卡死提示? 0=禁用, 1=聊天窗, 2=屏幕中下+聊天窗, 3=屏幕中下.", CVAR_FLAGS);
 	hBarLEN 		= CreateConVar("l4d2_infectedhp_bar", 			"70", 		"生命条长度(默认100). 最小:10 / 最大:200", CVAR_FLAGS);
-	hCharHealth 	= CreateConVar("l4d2_infectedhp_health", 		"|", 		"设置血量符号.", CVAR_FLAGS );
-	hCharDamage 	= CreateConVar("l4d2_infectedhp_damage", 		" ", 		"设置去血符号.", CVAR_FLAGS );
+	hCharHealth 	= CreateConVar("l4d2_infectedhp_health", 		"▮", 		"设置血量符号.", CVAR_FLAGS );
+	hCharDamage 	= CreateConVar("l4d2_infectedhp_damage", 		"▯", 		"设置去血符号.", CVAR_FLAGS );
 	hShowType 		= CreateConVar("l4d2_infectedhp_type", 			"0", 		"设置血条的显示位置和类型. 0=屏幕中心 1=屏幕中下.", CVAR_FLAGS);
 	hShowNum 		= CreateConVar("l4d2_infectedhp_num", 			"1", 		"启用血量数字显示? 0=禁用, 1=启用.", CVAR_FLAGS);
 	hTank 			= CreateConVar("l4d2_infectedhp_tank", 			"1", 		"启用坦克血条显示? 0=禁用, 1=启用.", CVAR_FLAGS);
@@ -252,11 +252,11 @@ public void OnInfectedDeath(Event hEvent, const char[] sName, bool bDontBroadcas
 						{
 							if(GetConVarInt(hPluginTank) == 1 || GetConVarInt(hPluginTank) == 2)
 							{
-								PrintToChat(i, "\x04[HspAF]\x05感染者\x03坦克%s\x05莫名其妙的就嘎了.", clName1);//聊天窗提示.
+								PrintToChat(i, "\x04[HspAF]\x05感染者\x03坦克%s\x05被气晕过去了.", clName1);//聊天窗提示.
 							}
 							if(GetConVarInt(hPluginTank) == 2 || GetConVarInt(hPluginTank) == 3)
 							{
-								PrintHintText(i, "[HspAF]感染者 坦克%s 莫名其妙的就嘎了.", clName1);//屏幕中下提示.
+								PrintHintText(i, "[HspAF]感染者 坦克%s 被气晕过去了.", clName1);//屏幕中下提示.
 							}
 						}
 					}
@@ -268,7 +268,7 @@ public void OnInfectedDeath(Event hEvent, const char[] sName, bool bDontBroadcas
 				{
 					if(IsClientConnected(i) && IsClientInGame(i) && !IsFakeClient(i) && GetClientTeam(i) != 3)
 					{
-						PrintHintText(i, "++ 坦克%s已经嘎了 ++", clName1);
+						PrintHintText(i, "++ 坦克%s失去了生命体征 ++", clName1);
 					}
 				}
 			}
