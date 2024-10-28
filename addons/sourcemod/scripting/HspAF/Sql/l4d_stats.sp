@@ -594,7 +594,7 @@ public OnPluginStart()
 	cvar_AnnounceRankChange = CreateConVar("l4d_stats_announcerank", "1", "Chat announcment for rank change", 0, true, 0.0, true, 1.0);
 	cvar_AnnounceRankChangeIVal = CreateConVar("l4d_stats_announcerankinterval", "60", "Rank change check interval", 0, true, 10.0);
 	cvar_AnnouncePlayerJoined = CreateConVar("l4d_stats_announceplayerjoined", "1", "Chat announcment for player joined.", 0, true, 0.0, true, 1.0);
-	cvar_AnnounceMotd = CreateConVar("l4d_stats_announcemotd", "1", "Chat announcment for the message of the day.", 0, true, 0.0, true, 1.0);
+	cvar_AnnounceMotd = CreateConVar("l4d_stats_announcemotd", "0", "Chat announcment for the message of the day.", 0, true, 0.0, true, 1.0);
 	cvar_AnnounceMode = CreateConVar("l4d_stats_announcemode", "1", "Chat announcment mode. 0 = Off, 1 = Player Only, 2 = Player Only w/ Public Headshots, 3 = All Public", 0, true, 0.0, true, 3.0);
 	cvar_AnnounceToTeam = CreateConVar("l4d_stats_announceteam", "2", "Chat announcment team messages to the team only mode. 0 = Print messages to all teams, 1 = Print messages to own team only, 2 = Print messages to own team and spectators only", 0, true, 0.0, true, 2.0);
 	//cvar_AnnounceSpecial = CreateConVar("l4d_stats_announcespecial", "1", "Chat announcment mode for special events. 0 = Off, 1 = Player Only, 2 = Print messages to all teams, 3 = Print messages to own team only, 4 = Print messages to own team and spectators only", 0, true, 0.0, true, 4.0);
@@ -632,13 +632,13 @@ public OnPluginStart()
 	cvar_EnableSvMedicPoints = CreateConVar("l4d_stats_medicpointssv", "1", "Survival medic points enabled", 0, true, 0.0, true, 1.0);
 
 	// Infected point Cvars
-	cvar_Infected = CreateConVar("l4d_stats_infected", "1", "Base score for killing a Common Infected", 0, true, 1.0);
-	cvar_Hunter = CreateConVar("l4d_stats_hunter", "3", "Base score for killing a Hunter", 0, true, 1.0);
-	cvar_Smoker = CreateConVar("l4d_stats_smoker", "3", "Base score for killing a Smoker", 0, true, 1.0);
-	cvar_Boomer = CreateConVar("l4d_stats_boomer", "2", "Base score for killing a Boomer", 0, true, 1.0);
+	cvar_Infected = CreateConVar("l4d_stats_infected", "0.1", "Base score for killing a Common Infected", 0, true, 1.0);
+	cvar_Hunter = CreateConVar("l4d_stats_hunter", "7", "Base score for killing a Hunter", 0, true, 1.0);
+	cvar_Smoker = CreateConVar("l4d_stats_smoker", "4", "Base score for killing a Smoker", 0, true, 1.0);
+	cvar_Boomer = CreateConVar("l4d_stats_boomer", "3", "Base score for killing a Boomer", 0, true, 1.0);
 	cvar_Spitter = CreateConVar("l4d_stats_spitter", "3", "[L4D2] Base score for killing a Spitter", 0, true, 1.0);
-	cvar_Jockey = CreateConVar("l4d_stats_jockey", "3", "[L4D2] Base score for killing a Jockey", 0, true, 1.0);
-	cvar_Charger = CreateConVar("l4d_stats_charger", "5", "[L4D2] Base score for killing a Charger", 0, true, 1.0);
+	cvar_Jockey = CreateConVar("l4d_stats_jockey", "4", "[L4D2] Base score for killing a Jockey", 0, true, 1.0);
+	cvar_Charger = CreateConVar("l4d_stats_charger", "7", "[L4D2] Base score for killing a Charger", 0, true, 1.0);
 	cvar_InfectedDamage = CreateConVar("l4d_stats_infected_damage", "1", "The amount of damage inflicted to Survivors to earn 1 point", 0, true, 1.0);
 
 	// Misc personal gain Cvars
@@ -9930,13 +9930,6 @@ stock int GetAnneSISpawnTime()
 	return GetConVarInt(FindConVar("versus_special_respawn_interval"));
 }
 
-stock char[] GetAnneVersion()
-{
-	char version[255];
-	GetConVarString(FindConVar("AnnePluginVersion"), version, sizeof(version));
-	return version;
-}
-
 IsSingleTeamGamemode()
 {
 	if (CurrentGamemodeID == GAMEMODE_SCAVENGE ||
@@ -11299,7 +11292,7 @@ public bool StopMapTiming()
 
 						if(mode > 0)
 						{
-							Format(query, sizeof(query), "SELECT time FROM %stimedmaps WHERE map = '%s' AND gamemode = %i AND difficulty = %i AND mutation = '%s' AND steamid = '%s' AND sinum = %i AND sitime = %i AND anneversion = '%s' AND mode = %i AND usebuy = %i AND auto = %i AND players = %i", DbPrefix, MapName, CurrentGamemodeID, GameDifficulty, CurrentMutation, ClientID, GetAnneInfectedNumber(), GetAnneSISpawnTime(), GetAnneVersion(), mode, g_brpgAvailable && L4D_RPG_GetGlobalValue(INDEX_USEBUY), IsAutoSpawnTime(), PlayerCounter);
+							Format(query, sizeof(query), "SELECT time FROM %stimedmaps WHERE map = '%s' AND gamemode = %i AND difficulty = %i AND mutation = '%s' AND steamid = '%s' AND sinum = %i AND sitime = %i  AND mode = %i AND usebuy = %i AND auto = %i AND players = %i", DbPrefix, MapName, CurrentGamemodeID, GameDifficulty, CurrentMutation, ClientID, GetAnneInfectedNumber(), GetAnneSISpawnTime(), mode, g_brpgAvailable && L4D_RPG_GetGlobalValue(INDEX_USEBUY), IsAutoSpawnTime(), PlayerCounter);
 						}
 						else
 						{
@@ -11344,9 +11337,9 @@ GetThisModeBestTime(int UseBuy=0)
 	{
 		mode = 6;
 	}
-	Format(query, sizeof(query), "SELECT time FROM %stimedmaps WHERE map = '%s' AND gamemode = %i AND difficulty = %i AND mutation = '%s'  AND sinum = %i AND sitime = %i AND anneversion = '%s' AND mode = %i AND usebuy = %i AND auto = %i AND players = %i ORDER BY time LIMIT 1",\
+	Format(query, sizeof(query), "SELECT time FROM %stimedmaps WHERE map = '%s' AND gamemode = %i AND difficulty = %i AND mutation = '%s'  AND sinum = %i AND sitime = %i  AND mode = %i AND usebuy = %i AND auto = %i AND players = %i ORDER BY time LIMIT 1",\
 	 		DbPrefix, MapName, CurrentGamemodeID, GameDifficulty, CurrentMutation, GetAnneInfectedNumber(), GetAnneSISpawnTime(),\
-			GetAnneVersion(), mode, UseBuy, IsAutoSpawnTime(), GetConVarInt(cvar_SurvivorLimit));
+			mode, UseBuy, IsAutoSpawnTime(), GetConVarInt(cvar_SurvivorLimit));
 	LogMessage("GetFastTimequery: %s", query);
 	SQL_TQuery(db, GetFastTime, query);
 }
@@ -11434,7 +11427,7 @@ public UpdateMapTimingStat(Handle:owner, Handle:hndl, const String:error[], any:
 				SetTimeLabel(OldTime, TimeLabel, sizeof(TimeLabel));
 				if(mode > 0)
 				{
-					StatsPrintToChat(Client, "下次继续努力哦，这张图 \x04Anne%s \x01版本该难度的最快完成时间 \x04%s \x01 并没有提升!", GetAnneVersion(), TimeLabel);
+					StatsPrintToChat(Client, "下次继续努力哦，这张图 \x04Anne%s \x01版本该难度的最快完成时间 \x04%s \x01 并没有提升!",TimeLabel);
 				}
 				else
 				{
@@ -11443,7 +11436,7 @@ public UpdateMapTimingStat(Handle:owner, Handle:hndl, const String:error[], any:
 			}
 			if(mode > 0)
 			{
-				Format(query, sizeof(query), "UPDATE %stimedmaps SET plays = plays + 1, modified = NOW() WHERE map = '%s' AND gamemode = %i AND difficulty = %i AND mutation = '%s' AND steamid = '%s' AND sinum = %i AND sitime = %i AND anneversion = '%s' AND mode = %i AND usebuy = %i AND auto = %i", DbPrefix, MapName, GamemodeID, GameDifficulty, Mutation, ClientID, GetAnneInfectedNumber(), GetAnneSISpawnTime(), GetAnneVersion(), mode, g_brpgAvailable && L4D_RPG_GetGlobalValue(INDEX_USEBUY), IsAutoSpawnTime());
+				Format(query, sizeof(query), "UPDATE %stimedmaps SET plays = plays + 1, modified = NOW() WHERE map = '%s' AND gamemode = %i AND difficulty = %i AND mutation = '%s' AND steamid = '%s' AND sinum = %i AND sitime = %i  AND mode = %i AND usebuy = %i AND auto = %i", DbPrefix, MapName, GamemodeID, GameDifficulty, Mutation, ClientID, GetAnneInfectedNumber(), GetAnneSISpawnTime(), mode, g_brpgAvailable && L4D_RPG_GetGlobalValue(INDEX_USEBUY), IsAutoSpawnTime());
 			}
 			else
 			{
@@ -11455,13 +11448,13 @@ public UpdateMapTimingStat(Handle:owner, Handle:hndl, const String:error[], any:
 			if (Mode)
 			{
 				SetTimeLabel(TotalTime, TimeLabel, sizeof(TimeLabel));
-				StatsPrintToChat(Client, "牛逼，你刷新了%s这张图 \x04Anne%s \x01版本该难度的最快完成时间，目前是 \x04%s\x01!", FastestTime < TotalTime?"目前":"你", GetAnneVersion(), TimeLabel);
+				StatsPrintToChat(Client, "牛逼，你刷新了%s这张图 \x04Anne%s \x01版本该难度的最快完成时间，目前是 \x04%s\x01!", FastestTime < TotalTime?"目前":"你", TimeLabel);
 
 			}
 
 			if(mode > 0)
 			{
-				Format(query, sizeof(query), "UPDATE %stimedmaps SET plays = plays + 1, time = %f, players = %i, modified = NOW() WHERE map = '%s' AND gamemode = %i AND difficulty = %i AND mutation = '%s' AND steamid = '%s' AND sinum = %i AND sitime = %i AND anneversion = '%s' AND mode = %i AND usebuy = %i AND auto = %i", DbPrefix, TotalTime, PlayerCounter, MapName, GamemodeID, GameDifficulty, Mutation, ClientID, GetAnneInfectedNumber(), GetAnneSISpawnTime(), GetAnneVersion(), mode, g_brpgAvailable && L4D_RPG_GetGlobalValue(INDEX_USEBUY), IsAutoSpawnTime());
+				Format(query, sizeof(query), "UPDATE %stimedmaps SET plays = plays + 1, time = %f, players = %i, modified = NOW() WHERE map = '%s' AND gamemode = %i AND difficulty = %i AND mutation = '%s' AND steamid = '%s' AND sinum = %i AND sitime = %i  AND mode = %i AND usebuy = %i AND auto = %i", DbPrefix, TotalTime, PlayerCounter, MapName, GamemodeID, GameDifficulty, Mutation, ClientID, GetAnneInfectedNumber(), GetAnneSISpawnTime(),  mode, g_brpgAvailable && L4D_RPG_GetGlobalValue(INDEX_USEBUY), IsAutoSpawnTime());
 			}
 			else
 			{
@@ -11482,7 +11475,7 @@ public UpdateMapTimingStat(Handle:owner, Handle:hndl, const String:error[], any:
 
 		if(mode > 0)
 		{
-			Format(query, sizeof(query), "INSERT INTO %stimedmaps (map, gamemode, difficulty, mutation, steamid, plays, time, players, sinum, sitime, anneversion, mode, usebuy, auto, modified, created) VALUES ('%s', %i, %i, '%s', '%s', 1, %f, %i, %i, %i, '%s', %i, %i, %i, NOW(), NOW())", DbPrefix, MapName, GamemodeID, GameDifficulty, Mutation, ClientID, TotalTime, PlayerCounter, GetAnneInfectedNumber(), GetAnneSISpawnTime(), GetAnneVersion(), mode, g_brpgAvailable && L4D_RPG_GetGlobalValue(INDEX_USEBUY), IsAutoSpawnTime());
+			Format(query, sizeof(query), "INSERT INTO %stimedmaps (map, gamemode, difficulty, mutation, steamid, plays, time, players, sinum, sitime, mode, usebuy, auto, modified, created) VALUES ('%s', %i, %i, '%s', '%s', 1, %f, %i, %i, %i, '%s', %i, %i, %i, NOW(), NOW())", DbPrefix, MapName, GamemodeID, GameDifficulty, Mutation, ClientID, TotalTime, PlayerCounter, GetAnneInfectedNumber(), GetAnneSISpawnTime(),  mode, g_brpgAvailable && L4D_RPG_GetGlobalValue(INDEX_USEBUY), IsAutoSpawnTime());
 		}
 		else
 		{
