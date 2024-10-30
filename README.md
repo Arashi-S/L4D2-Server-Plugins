@@ -27,6 +27,6 @@
 # 其他
 |仓库|解释|
 |-|-|
-|[L4D2-Server-Plugins_Vc](https://github.com/Arashi-S/L4D2-Server-Plugins_Vc) | 本包的另一个维护版本，相比普通战役模式有着一些优点，当然也带来一些待解决的麻烦...|
+|[L4D2-Server-Plugins_Vc](https://github.com/Arashi-S/L4D2-Server-Plugins_Vc) | 本包的另一个版本，是早期为解决战役自动处死落后特感构成的，但经长期查阅参考资料在241030已经在战役模式下解决了该问题，故不再维护此版本|
 
 ### 自娱自乐
