@@ -11,9 +11,10 @@
 * 或者使用平替[**Alliedmodes**](https://forums.alliedmods.net/showthread.php?t=349202)
 * 修改武器数据请参考`cfg/vote/weapon/weapon_info.cfg`
 ### 注意自定义内容
-* 服名：`addons\sourcemod\data\servername`
-* 管理员认证：`addons\sourcemod\configs\l4d2_admins_simple`
-* 广告：`addons\sourcemod\configs\advertisements`
+* 服名：`addons\sourcemod\data\hostname.txt`
+* 管理员认证：`addons\sourcemod\configs\l4d2_admins_simple.cfg`
+* 广告：`addons\sourcemod\configs\advertisements.txt`
+* 崩溃日志所有权：`addons\sourcemod\configs\core.cfg中第160行`
 * `mymotd`、 `myhost`
 * 我的启动项： `-strictportbind` `-nobreakpad` `-noassert` `-ip 0.0.0.0` `-port 27015` `+map c2m1` `+mp_gamemode coop` `+exec server.cfg` `-tickrate 100`
 ### 注意分发文件
