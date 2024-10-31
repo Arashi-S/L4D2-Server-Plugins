@@ -20,7 +20,7 @@
 {
     "1"
     {
-         "chat"			"{LIGHTGREEN}[本章节地图]: {green}{CURRENTMAP} \n{LIGHTGREEN}[服务器时间]: {green}{TIME24} - {DATE}"
+         "chat"			"{blue}[本章节地图]: {green}{CURRENTMAP} \n{blue}[服务器时间]: {green}{TIME24} - {DATE}"
     }
 	"2"
     {
