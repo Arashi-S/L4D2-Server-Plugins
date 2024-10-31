@@ -303,21 +303,17 @@ public void OnPluginStart() {
 	CreateConVar("bots_version", PLUGIN_VERSION, "bots(coop) plugin version.", FCVAR_NOTIFY|FCVAR_DONTRECORD);
 
 	g_cBotLimit =				CreateConVar("bots_limit",				"4",		"开局Bot的数量", CVAR_FLAGS, true, 1.0, true, float(MaxClients));
-	g_cJoinLimit =				CreateConVar("bots_join_limit",			"8",		"生还者玩家数量达到该值后将禁用sm_join命令和本插件的自动加入功能(不会影响游戏原有的加入功能). \n-1=插件不进行处理.", CVAR_FLAGS, true, -1.0, true, float(MaxClients));
+	g_cJoinLimit =				CreateConVar("bots_join_limit",			"-1",		"生还者玩家数量达到该值后将禁用sm_join命令和本插件的自动加入功能(不会影响游戏原有的加入功能). \n-1=插件不进行处理.", CVAR_FLAGS, true, -1.0, true, float(MaxClients));
 	g_cJoinFlags =				CreateConVar("bots_join_flags",			"3",		"额外玩家加入生还者的方法. \n0=插件不进行处理, 1=输入!join手动加入, 2=进服后插件自动加入, 3=手动+自动.", CVAR_FLAGS);
 	g_cJoinRespawn =			CreateConVar("bots_join_respawn",		"-1",		"玩家加入生还者时如果没有存活的Bot可以接管是否复活. \n0=否, 1=是, -1=总是复活(该值为-1时将允许玩家通过切换队伍/退出重进刷复活).", CVAR_FLAGS);
 	g_cSpecNotify =				CreateConVar("bots_spec_notify",		"1",		"完全旁观玩家点击鼠标左键时, 提示加入生还者的方式 \n0=不提示, 1=聊天栏, 2=屏幕中央, 3=弹出菜单.", CVAR_FLAGS);
-	g_eWeapon[0].Flags =		CreateConVar("bots_give_slot0",			"31",	"随机主武器(数字相加). \n\
-																					0=无,1=UZI,2=MP5,4=MAC,8=木喷,16=铁喷,32=M16,64=三连发,128=AK47,256=SG552,\n\
-																					512=1代连喷,1024=2代连喷,2048=木狙,4096=军狙,8192=鸟狙,16384=AWP,32768=M60,65536=榴弹.", CVAR_FLAGS);
-	g_eWeapon[1].Flags =		CreateConVar("bots_give_slot1",			"1",		"随机副武器(数字相加).\n\ 
-																					0=无,1=小手枪,2=马格南,4=电锯,8=斧头,16=平底锅,32=砍刀,64=棒球棒,128=撬棍,256=球拍,\n\
-																					512=警棍,1024=武士刀,2048=吉他,4096=小刀,8192=球棍,16384=铁铲,32768=草叉,65536=盾牌,131071=所有.", CVAR_FLAGS);
-	g_eWeapon[2].Flags =		CreateConVar("bots_give_slot2",			"0",		"随机投掷物(数字相加). \n0=无, 1=燃烧瓶, 2=土质炸弹, 4=胆汁瓶, 7=所有.", CVAR_FLAGS);
-	g_eWeapon[3].Flags =		CreateConVar("bots_give_slot3",			"0",		"随机医疗品(数字相加). \n0=无, 1=医疗包, 2=电击器, 4=燃烧弹药包, 8=高爆弹药包, 15=所有.", CVAR_FLAGS);
-	g_eWeapon[4].Flags =		CreateConVar("bots_give_slot4",			"2",		"随机急救药给(数字相加). \n0=无, 1=止痛药, 2=肾上腺素, 3=所有.", CVAR_FLAGS);
-	g_cGiveType =				CreateConVar("bots_give_type",			"2",		"根据什么来给玩家装备. \n0=无, 1=每个槽位的设置, 2=当前存活生还者的平均装备质量(仅主副武器).", CVAR_FLAGS);
-	g_cGiveTime =				CreateConVar("bots_give_time",			"0",		"什么时候给玩家装备. \n0=每次出生时, 1=只在本插件创建Bot和复活玩家时.", CVAR_FLAGS);
+	g_eWeapon[0].Flags =		CreateConVar("bots_give_slot0",			"31",	"主武器给什么. \n0=不给, 131071=所有, 7=微冲, 1560=霰弹, 30720=狙击, 31=Tier1, 32736=Tier2, 98304=Tier0.", CVAR_FLAGS);
+	g_eWeapon[1].Flags =		CreateConVar("bots_give_slot1",			"1",		"副武器给什么. \n0=不给, 131071=所有.(如果选中了近战且该近战在当前地图上未解锁,则会随机给一把).", CVAR_FLAGS);
+	g_eWeapon[2].Flags =		CreateConVar("bots_give_slot2",			"0",		"投掷物给什么. \n0=不给, 7=所有.", CVAR_FLAGS);
+	g_eWeapon[3].Flags =		CreateConVar("bots_give_slot3",			"0",		"医疗品给什么. \n0=不给, 15=所有.", CVAR_FLAGS);
+	g_eWeapon[4].Flags =		CreateConVar("bots_give_slot4",			"2",		"药品给什么. \n0=不给, 3=所有.", CVAR_FLAGS);
+	g_cGiveType =				CreateConVar("bots_give_type",			"2",		"根据什么来给玩家装备. \n0=不给, 1=每个槽位的设置, 2=当前存活生还者的平均装备质量(仅主副武器).", CVAR_FLAGS);
+	g_cGiveTime =				CreateConVar("bots_give_time",			"1",		"什么时候给玩家装备. \n0=每次出生时, 1=只在本插件创建Bot和复活玩家时.", CVAR_FLAGS);
 
 	g_cSurLimit = FindConVar("survivor_limit");
 	g_cSurLimit.Flags &= ~FCVAR_NOTIFY;
@@ -347,7 +343,6 @@ public void OnPluginStart() {
 	RegConsoleCmd("sm_join",			cmdJoinTeam2,	"加入生还者");
 	RegConsoleCmd("sm_tkbot",			cmdTakeOverBot,	"接管指定BOT");
 
-	RegAdminCmd("sm_away",				cmdJoinTeam1,	ADMFLAG_ROOT,	"加入旁观者");
 	RegAdminCmd("sm_spec",				cmdJoinTeam1,	ADMFLAG_ROOT,	"加入旁观者");
 	RegAdminCmd("sm_bot",				cmdBotSet,		ADMFLAG_ROOT,	"设置开局Bot的数量");
 
@@ -680,10 +675,10 @@ Action Listener_spec_next(int client, char[] command, int argc) {
 
 	switch (g_iSpecNotify) {
 		case 1:
-			PrintToChat(client, "\x01聊天栏输入 \x05!join \x01加入游戏.");
+			PrintToChat(client, "\x01聊天栏输入 \x05@join \x01加入游戏.");
 
 		case 2:
-			PrintHintText(client, "聊天栏输入 !join 加入游戏");
+			PrintHintText(client, "聊天栏输入 @join 加入游戏");
 
 		case 3:
 			JoinTeam2Menu(client);
@@ -1038,18 +1033,16 @@ void Event_FinaleVehicleLeaving(Event event, const char[] name, bool dontBroadca
 	}
 }
 
+void RecordSteamID(int client) {
+	if (CacheSteamID(client))
+		g_smSteamIDs.SetValue(g_ePlayer[client].AuthId, true);
+}
+
 bool IsFirstTime(int client) {
 	if (!CacheSteamID(client))
 		return false;
 
-	bool allow = true;
-	g_smSteamIDs.GetValue(g_ePlayer[client].AuthId, allow);
-	return allow;
-}
-
-void RecordSteamID(int client) {
-	if (CacheSteamID(client))
-		g_smSteamIDs.SetValue(g_ePlayer[client].AuthId, false, true);
+	return !g_smSteamIDs.ContainsKey(g_ePlayer[client].AuthId);
 }
 
 bool CacheSteamID(int client) {
