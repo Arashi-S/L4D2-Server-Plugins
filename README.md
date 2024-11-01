@@ -14,9 +14,13 @@
 * 服名：`addons\sourcemod\data\hostname.txt`
 * 管理员认证：`addons\sourcemod\configs\l4d2_admins_simple.cfg`
 * 广告：`addons\sourcemod\configs\advertisements.txt`
+* 连接Mysql数据库：`addons\sourcemod\configs\databases.cfg中第35行`
 * 崩溃日志所有权：`addons\sourcemod\configs\core.cfg中第160行`
 * `mymotd`、 `myhost`
-* 我的启动项： `-strictportbind` `-nobreakpad` `-noassert` `-ip 0.0.0.0` `-port 27015` `+map c2m1` `+mp_gamemode coop` `+exec server.cfg` `-tickrate 100`
+### 启动项（仅参考）
+* `-strictportbind` `-nobreakpad` `-noassert`    
+* `+mp_gamemode coop` `+exec server.cfg` `-tickrate 100`
+* `-ip 0.0.0.0` `-port 27015` `+map c2m1`
 ### 注意分发文件
 * 为客户端分发：`addons\Hit_Info.vpk`以确保客户端能正常生效击中反馈显示效果和音效
 * 为客户端分发：`addons\Dance_Play.vpk`以确保客户端正常生效跳舞动作和声音，~~避免因下载缓慢或莫名Error导致卡在加载界面~~,经修改源码，有文件的正常跳，没文件的罚站
