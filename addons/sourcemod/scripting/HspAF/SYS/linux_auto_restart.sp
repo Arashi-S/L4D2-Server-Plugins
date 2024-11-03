@@ -2,7 +2,7 @@
 #pragma newdecls required
 #include <sourcemod>
 #include <regex>
-#define PLUGIN_VERSION			"3.0-2024/3/19"
+#define PLUGIN_VERSION			"3.1-2024/10/26"
 #define DEBUG 0
 
 public Plugin myinfo =
@@ -51,7 +51,6 @@ public void OnPluginStart()
 	RegAdminCmd("sm_crash", Cmd_RestartServer, ADMFLAG_ROOT, "sm_crash - manually force the server to crash");
 
 	g_bFirstMap = true;
-	g_bCmdMap = false;
 	AddCommandListener(ServerCmd_map, "map");
 
 	BuildPath(Path_SM, g_sPath, sizeof(g_sPath), "logs/linux_auto_restart.log");
@@ -85,17 +84,13 @@ public void OnConfigsExecuted()
 		LogMessage("OnConfigsExecuted");
 	#endif 
 
-	if(g_bNoOneInServer || ( !g_bFirstMap &&  (g_bCmdMap || g_bAnyoneConnectedBefore) ))
+	if(g_bNoOneInServer || (!g_bFirstMap && g_bAnyoneConnectedBefore) || g_bCmdMap)
 	{
-		if(CheckPlayerInGame(0) == false) //沒有玩家在伺服器中
-		{
-			delete COLD_DOWN_Timer;
-			COLD_DOWN_Timer = CreateTimer(20.0, Timer_COLD_DOWN);
-		}
+		delete COLD_DOWN_Timer;
+		COLD_DOWN_Timer = CreateTimer(20.0, Timer_COLD_DOWN);
 	}
 
 	g_bFirstMap = false;
-	g_bCmdMap = false;
 }
 
 public void OnClientConnected(int client)
@@ -121,14 +116,14 @@ Action Cmd_RestartServer(int client, int args)
 		static char steamid[32];
 		GetClientAuthId(client, AuthId_SteamID64, steamid, sizeof(steamid), true);
 
-		LogToFileEx(g_sPath, "正在被玩家使用命令手动重启服务器... by %N [%s]", client, steamid);
-		PrintToServer("Manually restarting server in 5 seconds later... by %N", client);
+		LogToFileEx(g_sPath, "被管理员手动重启服务器... by %N [%s]", client, steamid);
+		PrintToServer("服务器5秒后被手动重启... by %N", client);
 		PrintToChatAll("Manually restarting server in 5 seconds later... by %N", client);
 	}
 	else
 	{
-		LogToFileEx(g_sPath, "使用服务器控制台命令重启服务器");
-		PrintToServer("Manually restarting server in 5 seconds later...");
+		LogToFileEx(g_sPath, "被服务端控制台手动重启服务器...");
+		PrintToServer("使用服务端控制台手动重启...");
 		PrintToChatAll("Manually restarting server in 5 seconds later...");
 	}
 
@@ -167,7 +162,7 @@ Action Timer_COLD_DOWN(Handle timer, any client)
 	}
 	
 	LogToFileEx(g_sPath, "最后一名玩家断开连接，开始自动重启");
-	PrintToServer("Last one player left the server, Restart server now");
+	PrintToServer("最后一名玩家断开连接，开始自动重启");
 
 	UnloadAccelerator();
 
@@ -258,6 +253,7 @@ bool CheckPlayerConnectingSV()
 Action ServerCmd_map(int client, const char[] command, int argc)
 {
 	g_bCmdMap = true;
+	g_hConVarHibernate.SetBool(false);
 
 	delete COLD_DOWN_Timer;
 	return Plugin_Continue;
