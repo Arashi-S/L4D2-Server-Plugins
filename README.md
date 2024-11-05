@@ -18,7 +18,7 @@
 * 崩溃日志所有权：`addons\sourcemod\configs\core.cfg中第160行`
 * `mymotd`、 `myhost`
 ### 启动项（仅参考）
-* `-strictportbind` `-nobreakpad` `-noassert`    
+* `-strictportbind` `-nobreakpad` `-noassert` `-game left4dead2`
 * `+mp_gamemode coop` `+exec server.cfg` `-tickrate 100`
 * `-ip 0.0.0.0` `-port 27015` `+map c2m1` `+sv_setmax 31`
 ### 注意分发文件
