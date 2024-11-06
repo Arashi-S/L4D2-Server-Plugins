@@ -18,24 +18,13 @@
 			"message" "关闭Tank防卡"
 		}
 	}
-	"[ReLoad]多特"
-	{
-		"exec Vote/special/on.cfg"
-		{
-			"message" "开启多特"
-		}
-		"exec Vote/special/off.cfg"
-		{
-			"message" "关闭多特"
-		}
-	}
 	"反伤系统"
 	{
-		"sm_cvar l4d2_reflect_ff_enable 1"
+		"HspAF_addcvar l4d2_reflect_ff_enable 1"
 		{
 			"message" "开启反伤"
 		}
-		"sm_cvar l4d2_reflect_ff_enable 0"
+		"HspAF_addcvar l4d2_reflect_ff_enable 0"
 		{
 			"message" "关闭反伤"
 		}
@@ -72,22 +61,22 @@
 	}
 	"门"
 	{
-		"sm_cvar l4d_safe_spam_open 0"
+		"HspAF_addcvar l4d_safe_spam_open 0"
 		{
 			"message" "关闭暴力开门"
 		}
-		"sm_cvar l4d_safe_spam_open 1"
+		"HspAF_addcvar l4d_safe_spam_open 1"
 		{
 			"message" "启用暴力开门"
 		}
 	}
 	"Tank飞行模式"
 	{
-		"sm_cvar ai_Tank_Bhop 1"
+		"HspAF_addcvar ai_Tank_Bhop 1"
 		{
 			"message" "开启Tank飞行模式"
 		}
-		"sm_cvar ai_Tank_Bhop 0"
+		"HspAF_addcvar ai_Tank_Bhop 0"
 		{
 			"message" "关闭Tank飞行模式"
 		}
