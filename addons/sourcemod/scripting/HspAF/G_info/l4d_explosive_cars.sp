@@ -81,7 +81,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-	g_cvarMaxHealth 		= CreateConVar("l4d_explosive_cars_health", 				"1000", "Maximum health of the cars", FCVAR_NOTIFY, true, 0.0);
+	g_cvarMaxHealth 		= CreateConVar("l4d_explosive_cars_health", 				"2500", "Maximum health of the cars", FCVAR_NOTIFY, true, 0.0);
 	g_cvarRadius 			= CreateConVar("l4d_explosive_cars_radius", 				"420", 	"Maximum radius of the explosion", FCVAR_NOTIFY, true, 0.0);
 	g_cvarPower 			= CreateConVar("l4d_explosive_cars_power", 					"300", 	"(L4D2 only) Power of the explosion when the car explodes", FCVAR_NOTIFY, true, 0.0);
 	g_cvarDamage 			= CreateConVar("l4d_explosive_cars_damage", 				"10", 	"Damage made by the explosion", FCVAR_NOTIFY, true, 0.0);
@@ -733,7 +733,7 @@ void CreateExplosion(int car, float carPos[3])
 			case 1:
 			{
 				PanicEvent();
-				PrintToChatAll("\x04[SM] \x03The car exploded and the infected heard the noise!");
+				PrintToChatAll("\x04[Car] \x03汽车爆炸的声音吸引来了一波感染者!");
 			}
 		}
 	}
