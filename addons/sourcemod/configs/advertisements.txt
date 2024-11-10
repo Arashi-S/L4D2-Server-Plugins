@@ -80,6 +80,6 @@
     }
     "16"
     {
-        "chat"			"{blue}队友太磨蹭{green}等的不耐烦？输入{blue}@dance，{green}跳舞解解压吧"
+        "chat"			"{blue}队友太磨蹭{green}等的不耐烦？输入{blue}@dance，{green}跳舞解解压，没动作那就是缺少相关文件，想想办法联系腐竹吧"
     }
 }
