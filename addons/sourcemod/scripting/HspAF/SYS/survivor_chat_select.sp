@@ -1,3 +1,23 @@
+/*
+ * v1.9.7
+ *	
+ *	1:修复换角色后弹夹异常补满的问题.
+ *	2:换角色指令!csm改成闲置状态也能使用.
+ *	3:选择角色后菜单自动重新打开.
+ *
+ * v1.9.8
+ *	
+ *	1:快捷指令更改角色不自动打开更换角色菜单.
+ *
+ * v1.9.9
+ *	
+ *	1:修复被控制，起身时等情况下菜单打不开的问题.
+ *
+ * v1.9.10
+ *	
+ *	1:修复特感团队可以打开更换生还者模型菜单的问题.
+ *
+ */
 #pragma semicolon 1
 #pragma newdecls required
 #include <sourcemod>
@@ -9,7 +29,7 @@
 #define PLUGIN_NAME				"Survivor Chat Select"
 #define PLUGIN_AUTHOR			"DeatChaos25, Mi123456 & Merudo, Lux, SilverShot"
 #define PLUGIN_DESCRIPTION		"Select a survivor character by typing their name into the chat."
-#define PLUGIN_VERSION			"1.8.6"
+#define PLUGIN_VERSION			"1.9.10"
 #define PLUGIN_URL				"https://forums.alliedmods.net/showthread.php?p=2399163#post2399163"
 
 #define GAMEDATA				"survivor_chat_select"
@@ -56,8 +76,7 @@ int
 	g_iTabHUDBar,
 	g_iAdminFlags,
 	g_iOrignalSet,
-	g_iTransitioning[MAXPLAYERS + 1],
-	g_iSelectedClient[MAXPLAYERS + 1];
+	g_iTransitioning[MAXPLAYERS + 1];
 
 bool
 	g_bAutoModel,
@@ -197,7 +216,7 @@ Action cmdCsc(int client, int args) {
 	if (!client || !IsClientInGame(client))
 		return Plugin_Handled;
 
-	char info[12];
+	char info[32];
 	char disp[MAX_NAME_LENGTH];
 	Menu menu = new Menu(Csc_MenuHandler);
 	menu.SetTitle("目标玩家:");
@@ -207,7 +226,7 @@ Action cmdCsc(int client, int args) {
 			continue;
 
 		FormatEx(info, sizeof info, "%d", GetClientUserId(i));
-		FormatEx(disp, sizeof disp, "%s - %N", GetModelName(i), i);
+		FormatEx(disp, sizeof disp, "%s - %s", GetModelName(i), GetTrueName(i));
 		menu.AddItem(info, disp);
 	}
 
@@ -215,7 +234,19 @@ Action cmdCsc(int client, int args) {
 	menu.Display(client, MENU_TIME_FOREVER);
 	return Plugin_Handled;
 }
+//返回对应的内容.
+char[] GetTrueName(int client)
+{
+	char sName[32];
+	int Bot = IsClientIdle(client);
+	
+	if(Bot != 0)
+		FormatEx(sName, sizeof(sName), "闲置:%N", Bot);
+	else
+		GetClientName(client, sName, sizeof(sName));
 
+	return sName;
+}
 // L4D2_Adrenaline_Recovery (https://github.com/LuxLuma/L4D2_Adrenaline_Recovery/blob/ac3f62eebe95d80fcf610fb6c7c1ed56bf4b31d2/%5BL4D2%5DAdrenaline_Recovery.sp#L96-L177)
 char[] GetModelName(int client) {
 	int idx;
@@ -249,11 +280,9 @@ char[] GetModelName(int client) {
 int Csc_MenuHandler(Menu menu, MenuAction action, int client, int param2) {
 	switch (action) {
 		case MenuAction_Select: {
-			char item[12];
+			char item[32];
 			menu.GetItem(param2, item, sizeof item);
-			g_iSelectedClient[client] = StringToInt(item);
-
-			ShowMenuAdmin(client);
+			ShowMenuAdmin(client, item);
 		}
 
 		case MenuAction_Cancel: {
@@ -268,18 +297,18 @@ int Csc_MenuHandler(Menu menu, MenuAction action, int client, int param2) {
 	return 0;
 }
 
-void ShowMenuAdmin(int client) {
+void ShowMenuAdmin(int client, char[] item) {
 	Menu menu = new Menu(ShowMenuAdmin_MenuHandler);
 	menu.SetTitle("人物:");
 
-	menu.AddItem("0", "Nick");
-	menu.AddItem("1", "Rochelle");
-	menu.AddItem("2", "Coach");
-	menu.AddItem("3", "Ellis");
-	menu.AddItem("4", "Bill");
-	menu.AddItem("5", "Zoey");
-	menu.AddItem("6", "Francis");
-	menu.AddItem("7", "Louis");
+	menu.AddItem(item, "Nick");
+	menu.AddItem(item, "Rochelle");
+	menu.AddItem(item, "Coach");
+	menu.AddItem(item, "Ellis");
+	menu.AddItem(item, "Bill");
+	menu.AddItem(item, "Zoey");
+	menu.AddItem(item, "Francis");
+	menu.AddItem(item, "Louis");
 
 	menu.ExitBackButton = true;
 	menu.Display(client, MENU_TIME_FOREVER);
@@ -287,11 +316,15 @@ void ShowMenuAdmin(int client) {
 
 int ShowMenuAdmin_MenuHandler(Menu menu, MenuAction action, int client, int param2) {
 	switch (action) {
-		case MenuAction_Select: {
+		case MenuAction_Select: 
+		{
 			if (param2 >= 0 && param2 <= 7)
-				SetCharacter(GetClientOfUserId(g_iSelectedClient[client]), param2, param2);
+			{
+				char item[32];
+				menu.GetItem(param2, item, sizeof item);
+				SetCharacter(client, GetClientOfUserId(StringToInt(item)), true, true, param2, param2);
+			}
 		}
-
 		case MenuAction_End:
 			delete menu;
 	}
@@ -300,9 +333,9 @@ int ShowMenuAdmin_MenuHandler(Menu menu, MenuAction action, int client, int para
 }
 
 Action cmdCsm(int client, int args) {
-	if (!CanUse(client))
+	if (!client || !IsClientInGame(client))
 		return Plugin_Handled;
-
+		
 	Menu menu = new Menu(Csm_MenuHandler);
 	menu.SetTitle("选择人物:");
 
@@ -316,7 +349,7 @@ Action cmdCsm(int client, int args) {
 	menu.AddItem("7", "Louis");
 
 	menu.ExitBackButton = true;
-	menu.Display(client, MENU_TIME_FOREVER);
+	menu.Display(client, 8);
 	return Plugin_Handled;
 }
 
@@ -324,7 +357,10 @@ int Csm_MenuHandler(Menu menu, MenuAction action, int client, int param2) {
 	switch (action) {
 		case MenuAction_Select: {
 			if (param2 >= 0 && param2 <= 7)
-				SetCharacter(client, param2, param2);
+				if (CanUse(client))
+					SetCharacter(client, client, true, false, param2, param2);
+				else
+					cmdCsm(client, 0);
 		}
 
 		case MenuAction_End:
@@ -335,36 +371,76 @@ int Csm_MenuHandler(Menu menu, MenuAction action, int client, int param2) {
 }
 
 bool CanUse(int client, bool checkAdmin = true) {
-	if (!client || !IsClientInGame(client)) {
-		ReplyToCommand(client, "角色选择菜单仅适用于游戏中的玩家.");
-		return false;
-	}
+	//if (!client || !IsClientInGame(client)) {
+	//	ReplyToCommand(client, "[提示]角色选择菜单仅适用于游戏中的玩家.");
+	//	return false;
+	//}
 
 	if (checkAdmin && !CheckCommandAccess(client, "", g_iAdminFlags)) {
-		ReplyToCommand(client, "只有管理员才能使用该菜单.");
+		ReplyToCommand(client, "[提示]只有管理员才能使用该菜单.");
 		return false;
 	}
 
-	if (GetClientTeam(client) != 2) {
-		ReplyToCommand(client, "角色选择菜单仅适用于幸存者.");
+	//if (GetClientTeam(client) != 2) {
+	//	ReplyToCommand(client, "[提示]角色选择菜单仅适用于幸存者.");
+	//	return false;
+	//}
+
+	if(GetClientTeam(client) == 1 && iGetBotOfIdlePlayer(client) == 0)
+	{
+		ReplyToCommand(client, "[提示]旁观者无法使用该指令.");
 		return false;
 	}
 
-	if (L4D_IsPlayerStaggering(client)) {
-		ReplyToCommand(client, "硬直状态下无法使用该指令.");
-		return false;
-	}
+	switch (GetClientTeam(client)) 
+	{
+		case 1:
+		{
+			int iBot = iGetBotOfIdlePlayer(client);
 
-	if (IsGettingUp(client)) {
-		ReplyToCommand(client, "起身过程中无法使用该指令.");
-		return false;
+			if(iBot != 0)
+			{
+				if (L4D_IsPlayerStaggering(iBot)) 
+				{
+					ReplyToCommand(client, "[提示]硬直状态下无法使用该指令.");
+					return false;
+				}
+				if (IsGettingUp(iBot)) 
+				{
+					ReplyToCommand(client, "[提示]起身过程中无法使用该指令.");
+					return false;
+				}
+				if (IsPinned(iBot)) 
+				{
+					ReplyToCommand(client, "[提示]被控制时无法使用该指令.");
+					return false;
+				}
+			}
+		}
+		case 2:
+		{
+			if (L4D_IsPlayerStaggering(client)) 
+			{
+				ReplyToCommand(client, "[提示]硬直状态下无法使用该指令.");
+				return false;
+			}
+			if (IsGettingUp(client)) 
+			{
+				ReplyToCommand(client, "[提示]起身过程中无法使用该指令.");
+				return false;
+			}
+			if (IsPinned(client)) 
+			{
+				ReplyToCommand(client, "[提示]被控制时无法使用该指令.");
+				return false;
+			}
+		}
+		case 3:
+		{
+			ReplyToCommand(client, "[提示]特感团队禁止使用该指令.");
+			return false;
+		}
 	}
-
-	if (IsPinned(client)) {
-		ReplyToCommand(client, "被控制时无法使用该指令.");
-		return false;
-	}
-
 	return true;
 }
 
@@ -491,7 +567,7 @@ Action cmdZoeyUse(int client, int args) {
 	if (!CanUse(client))
 		return Plugin_Handled;
 
-	SetCharacter(client, ZOEY);
+	SetCharacter(client, client, false, false, ZOEY);
 	return Plugin_Handled;
 }
 
@@ -499,7 +575,7 @@ Action cmdNickUse(int client, int args) {
 	if (!CanUse(client))
 		return Plugin_Handled;
 
-	SetCharacter(client, NICK);
+	SetCharacter(client, client, false, false, NICK);
 	return Plugin_Handled;
 }
 
@@ -507,7 +583,7 @@ Action cmdEllisUse(int client, int args) {
 	if (!CanUse(client))
 		return Plugin_Handled;
 
-	SetCharacter(client, ELLIS);
+	SetCharacter(client, client, false, false, ELLIS);
 	return Plugin_Handled;
 }
 
@@ -515,7 +591,7 @@ Action cmdCoachUse(int client, int args) {
 	if (!CanUse(client))
 		return Plugin_Handled;
 
-	SetCharacter(client, COACH);
+	SetCharacter(client, client, false, false, COACH);
 	return Plugin_Handled;
 }
 
@@ -523,7 +599,7 @@ Action cmdRochelleUse(int client, int args) {
 	if (!CanUse(client))
 		return Plugin_Handled;
 
-	SetCharacter(client, ROCHELLE);
+	SetCharacter(client, client, false, false, ROCHELLE);
 	return Plugin_Handled;
 }
 
@@ -531,7 +607,7 @@ Action cmdBillUse(int client, int args) {
 	if (!CanUse(client))
 		return Plugin_Handled;
 
-	SetCharacter(client, BILL);
+	SetCharacter(client, client, false, false, BILL);
 	return Plugin_Handled;
 }
 
@@ -539,7 +615,7 @@ Action cmdBikerUse(int client, int args) {
 	if (!CanUse(client))
 		return Plugin_Handled;
 
-	SetCharacter(client, FRANCIS);
+	SetCharacter(client, client, false, false, FRANCIS);
 	return Plugin_Handled;
 }
 
@@ -547,7 +623,7 @@ Action cmdLouisUse(int client, int args) {
 	if (!CanUse(client))
 		return Plugin_Handled;
 
-	SetCharacter(client, LOUIS);
+	SetCharacter(client, client, false, false, LOUIS);
 	return Plugin_Handled;
 }
 
@@ -710,11 +786,19 @@ void NextFrame_BotPlayer(int player) {
 	g_bPlayerBot[player] = false;
 }
 
-void SetCharacter(int client, int character, int modelIndex) {
+void SetCharacter(int client, int victim, bool back, bool type, int character, int modelIndex) {
 	if (!CanUse(client, false))
 		return;
 
-	SetCharacterInfo(client, character, modelIndex);
+	SetCharacterInfo(victim, character, modelIndex);
+
+	if(back == false)
+		return;
+	
+	if(type == false)
+		cmdCsm(client, 0);
+	else
+		cmdCsc(client, 0);
 }
 
 public void OnEntityCreated(int entity, const char[] classname) {
@@ -892,16 +976,53 @@ void SetCharacterInfo(int client, int character, int modelIndex) {
 	LogError("Set \"%N\" Character \"%s\" to \"%s\"", client, buf != -1 ? g_sSurNames[buf] : ModelName, g_sSurNames[modelIndex]);
 	#endif
 
-	SetEntProp(client, Prop_Send, "m_survivorCharacter", character, 2);
-	SetEntityModel(client, g_sSurModels[modelIndex]);
+	switch (GetClientTeam(client)) 
+	{
+		case 1:
+		{
+			int iBot = iGetBotOfIdlePlayer(client);
 
-	if (IsFakeClient(client)) {
-		g_bBlockUserMsg = true;
-		SetClientInfo(client, "name", g_sSurNames[modelIndex]);
-		g_bBlockUserMsg = false;
+			if(iBot != 0)
+			{
+				SetEntProp(iBot, Prop_Send, "m_survivorCharacter", character, 2);
+				SetEntityModel(iBot, g_sSurModels[modelIndex]);
+				ReEquipWeapons(iBot);
+			}
+		}
+		case 2:
+		{
+			SetEntProp(client, Prop_Send, "m_survivorCharacter", character, 2);
+			SetEntityModel(client, g_sSurModels[modelIndex]);
+
+			if (IsFakeClient(client)) {
+				g_bBlockUserMsg = true;
+				SetClientInfo(client, "name", g_sSurNames[modelIndex]);
+				g_bBlockUserMsg = false;
+			}
+
+			ReEquipWeapons(client);
+		}
 	}
+}
 
-	ReEquipWeapons(client);
+//返回闲置玩家对应的电脑.
+int iGetBotOfIdlePlayer(int client)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsClientInGame(i) && IsFakeClient(i) && GetClientTeam(i) == 2 && IsClientIdle(i) == client)
+			return i;
+	}
+	return 0;
+}
+
+//返回电脑幸存者对应的玩家.
+int IsClientIdle(int client)
+{
+	if (!HasEntProp(client, Prop_Send, "m_humanSpectatorUserID"))
+		return 0;
+
+	return GetClientOfUserId(GetEntProp(client, Prop_Send, "m_humanSpectatorUserID"));
 }
 
 // https://github.com/LuxLuma/Left-4-fix/blob/master/left%204%20fix/Defib_Fix/scripting/Defib_Fix.sp
@@ -958,7 +1079,10 @@ void ReEquipWeapons(int client) {
 
 				weapon = GetPlayerWeaponSlot(client, 0);
 				if (weapon > MaxClients) {
-					SetEntProp(weapon, Prop_Send, "m_iClip1", clip1);
+					DataPack hPack = new DataPack();//创建数据包.
+					RequestFrame(SetWeaponClip1, hPack);//下一帧设置弹夹弹药数量.
+					hPack.WriteCell(EntIndexToEntRef(weapon));
+					hPack.WriteCell(clip1);
 					GetOrSetPlayerAmmo(client, weapon, ammo);
 
 					if (upgrade > 0)
@@ -1012,8 +1136,13 @@ void ReEquipWeapons(int client) {
 				weapon = GetPlayerWeaponSlot(client, 1);
 				if (weapon > MaxClients) {
 					if (clip1 != -1)
-						SetEntProp(weapon, Prop_Send, "m_iClip1", clip1);
-
+					{
+						DataPack hPack = new DataPack();//创建数据包.
+						RequestFrame(SetWeaponClip1, hPack);//下一帧设置弹夹弹药数量.
+						hPack.WriteCell(EntIndexToEntRef(weapon));
+						hPack.WriteCell(clip1);
+						//SetEntProp(weapon, Prop_Send, "m_iClip1", clip1);
+					}
 					if (weaponSkin > 0)
 						SetEntProp(weapon, Prop_Send, "m_nSkin", weaponSkin);
 				}
@@ -1023,7 +1152,16 @@ void ReEquipWeapons(int client) {
 
 	FakeClientCommand(client, "use %s", active);
 }
-
+//设置弹夹弹药数量.
+void SetWeaponClip1(DataPack hPack)
+{
+	hPack.Reset();
+	int weapon = EntRefToEntIndex(hPack.ReadCell());
+	int clip1 = hPack.ReadCell();
+	if(IsValidEntity(weapon))
+		SetEntProp(weapon, Prop_Send, "m_iClip1", clip1);
+	delete hPack;
+}
 int GetOrSetPlayerAmmo(int client, int weapon, int ammo = -1) {
 	int m_iPrimaryAmmoType = GetEntProp(weapon, Prop_Send, "m_iPrimaryAmmoType");
 	if (m_iPrimaryAmmoType != -1) {
