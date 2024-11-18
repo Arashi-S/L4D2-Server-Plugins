@@ -1,0 +1,21 @@
+/* created by IA/NanaNana */
+"Games"
+{
+	"left4dead2"
+	{	
+		"Offsets"
+		{
+			"PrimaryAttack"
+			{
+				"windows"	"282"
+				"linux"		"283"
+			}
+			"RifleDesert_Offset"
+			{
+				"windows"	"6128"
+				"linux"		"6132"
+			}
+		}
+	}
+}
+
