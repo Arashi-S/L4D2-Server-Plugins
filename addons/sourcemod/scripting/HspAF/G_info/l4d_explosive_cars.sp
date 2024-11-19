@@ -5,7 +5,7 @@
 #include <sdkhooks>
 #include <left4dhooks>
 
-#define GETVERSION "2.4-2024/8/4"
+#define GETVERSION "2.5-2024/11/11"
 #define ARRAY_SIZE 2048
 #define ENTITY_SAFE_LIMIT 2000 //don't spawn entity when it's index is above this
 #define EXLOPDE_INTERVAL 6.0
@@ -81,19 +81,19 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 
 public void OnPluginStart()
 {
-	g_cvarMaxHealth 		= CreateConVar("l4d_explosive_cars_health", 				"2500", "Maximum health of the cars", FCVAR_NOTIFY, true, 0.0);
+	g_cvarMaxHealth 		= CreateConVar("l4d_explosive_cars_health", 				"3000", "Maximum health of the cars", FCVAR_NOTIFY, true, 0.0);
 	g_cvarRadius 			= CreateConVar("l4d_explosive_cars_radius", 				"420", 	"Maximum radius of the explosion", FCVAR_NOTIFY, true, 0.0);
 	g_cvarPower 			= CreateConVar("l4d_explosive_cars_power", 					"300", 	"(L4D2 only) Power of the explosion when the car explodes", FCVAR_NOTIFY, true, 0.0);
 	g_cvarDamage 			= CreateConVar("l4d_explosive_cars_damage", 				"10", 	"Damage made by the explosion", FCVAR_NOTIFY, true, 0.0);
 	g_cvarPanicEnable 		= CreateConVar("l4d_explosive_cars_panic", 					"1", 	"Should the car explosion cause a panic event? (1: Yes 0: No)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	g_cvarPanicChance 		= CreateConVar("l4d_explosive_cars_panic_chance", 			"5", 	"Chance that the cars explosion might call a horde (1 / CVAR) [1: Always]", FCVAR_NOTIFY, true, 1.0);
 	g_cvarInfected 			= CreateConVar("l4d_explosive_cars_infected", 				"1", 	"Should infected trigger the car explosion? (1: Yes 0: No)", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_cvarTankDamage 		= CreateConVar("l4d_explosive_cars_tank", 					"0", 	"How much damage do the tank deal to the cars? (0: Default, which is 999 from the engine)", FCVAR_NOTIFY, true, 0.0);
+	g_cvarTankDamage 		= CreateConVar("l4d_explosive_cars_tank", 					"1", 	"How much damage do the tank deal to the cars? (0: Default, which is 999 from the engine)", FCVAR_NOTIFY, true, 0.0);
 	g_cvarRemoveCarTime 	= CreateConVar("l4d_explosive_cars_removetime", 			"60", 	"Time to wait before removing the exploded car in case it blockes the way. (0: Don't remove)", FCVAR_NOTIFY, true);
 	g_cvarUnloadMap 		= CreateConVar("l4d_explosive_cars_unload_map",		 		"", 	"On which maps should the plugin disable itself? separate by commas (no spaces). (Example: c5m3_cemetery,c5m5_bridge)", FCVAR_NOTIFY);
 	g_cvarExplosionDmg 		= CreateConVar("l4d_explosive_cars_explosion_damage", 		"1", 	"If 1, cars get damaged by another car's explosion", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_cvarCarHealthState 	= CreateConVar("l4d_explosive_cars_health_outline", 		"1", 	"If 1, Display outline glow of car's health", FCVAR_NOTIFY, true, 0.0, true, 1.0);
-	g_cvarCarMethod			= CreateConVar("l4d_explosive_cars_flying_method", 			"0",	 "(L4D2) Which method to send survivor flying by car.\n0=Flings a player to the ground, like they were hit by a Charger\n1=Stagger player", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_cvarCarHealthState 	= CreateConVar("l4d_explosive_cars_health_outline", 		"1", 	"(L4D2) If 1, Display outline glow of car's health", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	g_cvarCarMethod			= CreateConVar("l4d_explosive_cars_flying_method", 			"0",	"(L4D2) Which method to send survivor flying by car.\n0=Flings a player to the ground, like they were hit by a Charger\n1=Stagger player", FCVAR_NOTIFY, true, 0.0, true, 1.0);
 	CreateConVar("l4d_explosive_cars_version", GETVERSION, "Version of the l4d Explosive Cars plugin", FCVAR_SPONLY|FCVAR_NOTIFY|FCVAR_DONTRECORD);
 	//AutoExecConfig(true, "l4d_explosive_cars");
 
@@ -434,16 +434,19 @@ void OnTakeDamagePost(int victim, int attacker, int inflictor, float damage, int
 
 		if(tdamage >= MaxDamageHandle && tdamage < MaxDamageHandle * 2 && !g_bLowWreck[victim])
 		{
-			if(g_bCarHealthState == false)
+			if(g_bL4D2Version)
 			{
-				SetEntProp(victim, Prop_Send, "m_iGlowType", 0);
-			}
-			else
-			{
-				SetEntProp(victim, Prop_Send, "m_iGlowType", 3);
-				SetEntProp(victim, Prop_Send, "m_glowColorOverride", 65535);
-				SetEntProp(victim, Prop_Send, "m_nGlowRange", 500);
-				SetEntProp(victim, Prop_Send, "m_bFlashing", 0);
+				if(g_bCarHealthState == false)
+				{
+					SetEntProp(victim, Prop_Send, "m_iGlowType", 0);
+				}
+				else
+				{
+					SetEntProp(victim, Prop_Send, "m_iGlowType", 3);
+					SetEntProp(victim, Prop_Send, "m_glowColorOverride", 65535);
+					SetEntProp(victim, Prop_Send, "m_nGlowRange", 500);
+					SetEntProp(victim, Prop_Send, "m_bFlashing", 0);
+				}
 			}
 
 			AttachParticle(victim, DAMAGE_WHITE_SMOKE);
@@ -451,16 +454,19 @@ void OnTakeDamagePost(int victim, int attacker, int inflictor, float damage, int
 		}
 		else if(tdamage >= MaxDamageHandle * 2 && tdamage < MaxDamageHandle * 3 && !g_bMidWreck[victim])
 		{
-			if(g_bCarHealthState == false)
+			if(g_bL4D2Version)
 			{
-				SetEntProp(victim, Prop_Send, "m_iGlowType", 0);
-			}
-			else
-			{
-				SetEntProp(victim, Prop_Send, "m_iGlowType", 3);
-				SetEntProp(victim, Prop_Send, "m_glowColorOverride", 13260);
-				SetEntProp(victim, Prop_Send, "m_nGlowRange", 500);
-				SetEntProp(victim, Prop_Send, "m_bFlashing", 0);
+				if(g_bCarHealthState == false)
+				{
+					SetEntProp(victim, Prop_Send, "m_iGlowType", 0);
+				}
+				else
+				{
+					SetEntProp(victim, Prop_Send, "m_iGlowType", 3);
+					SetEntProp(victim, Prop_Send, "m_glowColorOverride", 13260);
+					SetEntProp(victim, Prop_Send, "m_nGlowRange", 500);
+					SetEntProp(victim, Prop_Send, "m_bFlashing", 0);
+				}
 			}
 
 			AttachParticle(victim, DAMAGE_BLACK_SMOKE);
@@ -468,16 +474,19 @@ void OnTakeDamagePost(int victim, int attacker, int inflictor, float damage, int
 		}
 		else if(tdamage >= MaxDamageHandle * 3 && tdamage < MaxDamageHandle * 4 && !g_bHighWreck[victim])
 		{
-			if(g_bCarHealthState == false)
+			if(g_bL4D2Version)
 			{
-				SetEntProp(victim, Prop_Send, "m_iGlowType", 0);
-			}
-			else
-			{
-				SetEntProp(victim, Prop_Send, "m_iGlowType", 3);
-				SetEntProp(victim, Prop_Send, "m_glowColorOverride", 225);
-				SetEntProp(victim, Prop_Send, "m_nGlowRange", 500);
-				SetEntProp(victim, Prop_Send, "m_bFlashing", 0);
+				if(g_bCarHealthState == false)
+				{
+					SetEntProp(victim, Prop_Send, "m_iGlowType", 0);
+				}
+				else
+				{
+					SetEntProp(victim, Prop_Send, "m_iGlowType", 3);
+					SetEntProp(victim, Prop_Send, "m_glowColorOverride", 225);
+					SetEntProp(victim, Prop_Send, "m_nGlowRange", 500);
+					SetEntProp(victim, Prop_Send, "m_bFlashing", 0);
+				}
 			}
 
 			EmitSoundToAll(FIRE_SOUND, victim);
@@ -486,16 +495,19 @@ void OnTakeDamagePost(int victim, int attacker, int inflictor, float damage, int
 		}
 		else if(tdamage >= MaxDamageHandle * 4 && tdamage < MaxDamageHandle * 5 && !g_bCritWreck[victim])
 		{
-			if(g_bCarHealthState == false)
+			if(g_bL4D2Version)
 			{
-				SetEntProp(victim, Prop_Send, "m_iGlowType", 0);
-			}
-			else
-			{
-				SetEntProp(victim, Prop_Send, "m_iGlowType", 3);
-				SetEntProp(victim, Prop_Send, "m_glowColorOverride", 255);
-				SetEntProp(victim, Prop_Send, "m_nGlowRange", 500);
-				SetEntProp(victim, Prop_Send, "m_bFlashing", 1);
+				if(g_bCarHealthState == false)
+				{
+					SetEntProp(victim, Prop_Send, "m_iGlowType", 0);
+				}
+				else
+				{
+					SetEntProp(victim, Prop_Send, "m_iGlowType", 3);
+					SetEntProp(victim, Prop_Send, "m_glowColorOverride", 255);
+					SetEntProp(victim, Prop_Send, "m_nGlowRange", 500);
+					SetEntProp(victim, Prop_Send, "m_bFlashing", 1);
+				}
 			}
 
 			if(g_bL4D2Version) AttachParticle(victim, DAMAGE_FIRE_HUGE);
@@ -503,16 +515,19 @@ void OnTakeDamagePost(int victim, int attacker, int inflictor, float damage, int
 		}
 		else if(tdamage > MaxDamageHandle * 5 && !g_bExploded[victim])
 		{
-			if(g_bCarHealthState == false)
+			if(g_bL4D2Version)
 			{
-				SetEntProp(victim, Prop_Send, "m_iGlowType", 0);
-			}
-			else
-			{
-				SetEntProp(victim, Prop_Send, "m_iGlowType", 3);
-				SetEntProp(victim, Prop_Send, "m_glowColorOverride", 255);
-				SetEntProp(victim, Prop_Send, "m_nGlowRange", 500);
-				SetEntProp(victim, Prop_Send, "m_bFlashing", 1);
+				if(g_bCarHealthState == false)
+				{
+					SetEntProp(victim, Prop_Send, "m_iGlowType", 0);
+				}
+				else
+				{
+					SetEntProp(victim, Prop_Send, "m_iGlowType", 3);
+					SetEntProp(victim, Prop_Send, "m_glowColorOverride", 255);
+					SetEntProp(victim, Prop_Send, "m_nGlowRange", 500);
+					SetEntProp(victim, Prop_Send, "m_bFlashing", 1);
+				}
 			}
 
 			if(!g_bCritWreck[victim])
@@ -536,8 +551,11 @@ Action Timer_ExplodeCar(Handle timer, any entityRef)
 	if (car == INVALID_ENT_REFERENCE)
 		return Plugin_Continue;
 
-	SetEntProp(car, Prop_Send, "m_iGlowType", 0);
-	SetEntProp(car, Prop_Send, "m_bFlashing", 0);
+	if(g_bL4D2Version)
+	{
+		SetEntProp(car, Prop_Send, "m_iGlowType", 0);
+		SetEntProp(car, Prop_Send, "m_bFlashing", 0);
+	}
 
 	if(g_GameExplodeTime < GetEngineTime())
 	{
@@ -556,18 +574,20 @@ Action Timer_ExplodeCar(Handle timer, any entityRef)
 	return Plugin_Continue;
 }
 
-stock void EditCar(int car)
+void EditCar(int car)
 {
 	SetEntityRenderColor(car, 51, 51, 51, 255);
 	char sModel[256];
 	GetEntPropString(car, Prop_Data, "m_ModelName", sModel, sizeof(sModel));
-	if(strcmp(sModel, "models/props_vehicles/cara_82hatchback.mdl") == 0)
+	ReplaceStringEx(sModel, sizeof(sModel), ".mdl", "");
+	Format(sModel, sizeof(sModel), "%s_wrecked.mdl", sModel);
+	if(FileExists(sModel, true))
 	{
-		SetEntityModel(car, "models/props_vehicles/cara_82hatchback_wrecked.mdl");
-	}
-	else if(strcmp(sModel, "models/props_vehicles/cara_95sedan.mdl") == 0)
-	{
-		SetEntityModel(car, "models/props_vehicles/cara_95sedan_wrecked.mdl");
+		if(!IsModelPrecached(sModel))
+		{
+			PrecacheModel(sModel);
+		}
+		SetEntityModel(car, sModel);
 	}
 }
 
@@ -733,7 +753,7 @@ void CreateExplosion(int car, float carPos[3])
 			case 1:
 			{
 				PanicEvent();
-				PrintToChatAll("\x04[Car] \x03汽车爆炸的声音吸引来了一波感染者!");
+				PrintToChatAll("\x04[SM] \x03The car exploded and the infected heard the noise!");
 			}
 		}
 	}
