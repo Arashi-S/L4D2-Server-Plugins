@@ -29,9 +29,4 @@
 * 移除排名插件在：`sql/l4d_stats.smx`来避免持续的报错
 * 重新启用警报车提示插件在：`optional/Del/l4d2_create_panic.smx`来确保功能完整
 
-# 其他
-|仓库|解释|
-|-|-|
-|[L4D2-Server-Plugins_Vc](https://github.com/Arashi-S/L4D2-Server-Plugins_Vc) | 本包的另一个版本，是早期为解决战役自动处死落后特感构成的，但经长期查阅参考资料在241030已经在战役模式下解决了该问题，故不再维护此版本|
-
 ### 自娱自乐
