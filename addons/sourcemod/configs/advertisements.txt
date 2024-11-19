@@ -20,66 +20,66 @@
 {
     "1"
     {
-         "chat"			"{blue}[本章节地图]: {green}{CURRENTMAP} \n{blue}[服务器时间]: {green}{TIME24} - {DATE}"
+         "chat"			"{blue}[本章节地图]: {default}{CURRENTMAP} \n{blue}[服务器时间]: {default}{TIME24} - {DATE}"
     }
 	"2"
     {
-        "chat"			"{green}可尝试攻击{blue}动态汽车{green}来打爆它"
+        "chat"			"{default}[{green}公告{default}] {blue}当心汽车受到攻击后会爆炸{default}那可能会重创你的团队"
     }
 	"3"
     {
-        "chat"			"{green}@Afk{blue}闲置，{green}@join{blue}加入游戏{green}@run{blue}离开服务器"
+        "chat"			"{default}[{green}公告{default}] {blue}使用{default}@Afk{blue}闲置，{default}@join{blue}加入游戏{default}@run{blue}离开服务器"
     }
 	"4"
     {
-        "chat"			"{blue}使用聊天框命令{green}@drop{blue}或双击{green}喷漆键{blue}丢掉当前武器"
+        "chat"			"{default}[{green}公告{default}] {blue}使用聊天框命令{default}@drop{blue}或双击{default}喷漆键{blue}丢掉当前武器"
     }
 	"5"
     {
-        "chat"			"{blue}欢迎加入我服QQ群：{green}811 {default}940 {olive}760"
+        "chat"			"{default}[{green}公告{default}] {blue}欢迎加入我服QQ群：{default}811 {default}940 {olive}760"
     }
     "6"
     {
-         "chat"			"{blue}按{green} Z {blue}键使用{green} 看 {blue}来标记物品/地点/特感，{green}让盲人队友更快发现它们"
+         "chat"			"{default}[{green}公告{default}] {blue}按{default} Z {blue}键使用{default} 看 {blue}来标记物品/{default}地点/{blue}特感,{default}让盲人队友更快发现它们"
     }
 	"7"
     {
-        "chat"			"{blue}在使用胆汁罐时，{green}当心砸到你队友的身上"
+        "chat"			"{default}[{green}公告{default}] {blue}在使用胆汁罐时，{default}当心砸到你队友的身上"
     }
 	"8"
     {
-        "chat"			"{blue}输入聊天框命令{green}@menu{blue}打开玩家命令菜单"
+        "chat"			"{default}[{green}公告{default}] {blue}输入聊天框命令{default}@menu{blue}打开玩家命令菜单"
     }
 	"9"
     {
-        "chat"			"{blue}输入聊天框命令{green}@chmap更换地图，{blue}在旁观时输入{green}@teams获得更好的旁观体验"
+        "chat"			"{default}[{green}公告{default}] {blue}输入聊天框命令{default}@chmap更换地图，\n{blue}在旁观时输入{default}@teams获得更好的旁观体验"
     }
 	"10"
     {
-        "chat"			"{blue}本服删除了挂边的判定，{green}容易脚滑的老屁股们别再指望队友了"
+        "chat"			"{default}[{green}公告{default}] {blue}本服删除了挂边的判定，{default}容易脚滑的老屁股们别再指望队友了"
     }
 	"11"
     {
-        "chat"			"{blue}输入聊天框命令{green}@3rd{blue}切换第三人称"
+        "chat"			"{default}[{green}公告{default}] {blue}输入聊天框命令{default}@3rd{blue}切换第三人称"
     }
     "12"
     {
-        "chat"			"{blue}大好人队友总是给你{green}绿血打包？{blue}可通过在治疗时按{green}空格跳跃，{blue}阻止打包"
+        "chat"			"{default}[{green}公告{default}] {blue}大好人队友总是给你{default}绿血打包?{blue}可通过在治疗时按{default}空格跳跃，{blue}阻止打包"
     }
     "13"
     {
-        "chat"			"{blue}贴墙并在跳跃时{green}按E，{blue}就可以爬上墙体"
+        "chat"			"{default}[{green}公告{default}] {blue}贴墙并在跳跃时{default}按E，{blue}就可以爬上墙体"
     }
     "14"
     {
-        "chat"			"{blue}重复按武器对应数字键换空来拾取该槽位{green}第二件物品/武器，{blue}重复按对应数字键切换"
+        "chat"			"{default}[{green}公告{default}] {blue}你可以拾取同一槽位的{default}第二件物品/武器，{blue}重复按对应数字键切换"
     }
     "15"
     {
-        "chat"			"{blue}输入{green}@v{blue}发起各种投票，{blue}输入{green}@vk{blue}投票踢出捣乱玩家"
+        "chat"			"{default}[{green}公告{default}] {blue}输入{default}@v{blue}发起各种投票，{blue}输入{default}@vk{blue}投票踢出捣乱玩家"
     }
     "16"
     {
-        "chat"			"{blue}队友太磨蹭{green}等的不耐烦？输入{blue}@dance，{green}跳舞解解压，没动作那就是缺少相关文件，想想办法联系腐竹吧"
+        "chat"			"{default}[{green}公告{default}] {blue}队友太磨蹭{default}等的不耐烦？输入{blue}@dance，{default}跳舞解解压。\n没动作那就是缺少相关文件，想想办法联系腐竹吧"
     }
 }
