@@ -13,6 +13,7 @@
 #include <sourcemod>
 #include <sdkhooks>
 #include <sdktools>
+#include <multicolors>
 
 #define PLUGIN_VERSION "1.1"
 
@@ -42,7 +43,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	g_cNightVisionMode = CreateConVar("l4d2_night_vision_mode", "3", "0=关闭, 1=只有幸存者可以使用, 2=只有感染者可以使用, 3=都可以使用.");
+	g_cNightVisionMode = CreateConVar("l4d2_night_vision_mode", "1", "0=关闭, 1=只有幸存者可以使用, 2=只有感染者可以使用, 3=都可以使用.");
 	g_cNightVisionMode.AddChangeHook(ConVarChange);
 
 	HookEvent("round_start", Event_RoundStart);
@@ -87,15 +88,15 @@ Action TimerAnnounce(Handle timer, any client)
 				case 1:
 				{
 					if (GetClientTeam(client) == 2)
-						PrintToChat(client,"\x04[HspAF]\x05幸存者\x03双击F\x05开关夜视仪.");
+						CPrintToChat(client,"{default}[{blue}HspAF{default}] {blue}幸存者{default}双击F{blue}开关夜视仪.");
 				}
 				case 2:
 				{
 					if (GetClientTeam(client) == 3)
-						PrintToChat(client,"\x04[HspAF]\x05感染者\x03单击F\x05开关夜视仪.");
+						CPrintToChat(client,"{default}[{blue}HspAF{default}] {blue}感染者{default}单击F{blue}开关夜视仪.");
 				}
 				case 3:
-					PrintToChat(client,"\x04[HspAF]\x05幸存者\x03双击F\x05感染者\x03单击F\x05开关夜视仪.");
+					CPrintToChat(client,"{default}[{blue}HspAF{default}] {blue}幸存者{default}双击F{blue}感染者{default}单击F{blue}开关夜视仪.");
 			}
 		}
 	}
