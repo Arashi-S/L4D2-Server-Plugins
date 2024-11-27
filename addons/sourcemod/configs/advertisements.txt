@@ -82,4 +82,8 @@
     {
         "chat"			"{default}[{green}公告{default}] {blue}队友太磨蹭{default}等的不耐烦？输入{blue}@dance，{default}跳舞解解压。\n没动作那就是缺少相关文件，想想办法联系腐竹吧"
     }
+    "17"
+    {
+        "chat"			"{default}[{green}公告{default}] {blue}聊天框输入{default}@firemode{blue}将Scar在{default}三连发{blue}和{default}全自动{blue}间切换"
+    }
 }
