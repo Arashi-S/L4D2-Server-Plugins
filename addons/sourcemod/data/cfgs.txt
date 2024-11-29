@@ -87,9 +87,9 @@
 		{
 			"message" "[默认]启用Miuwiki Hud"
 		}
-		"exec Vote/Hud/scriptedHUD.cfg"
+		"exec Vote/Hud/NanakaNeko.cfg"
 		{
-			"message" "启用scripted Hud"
+			"message" "启用奈's 路程HUD"
 		}
 	}
 }
