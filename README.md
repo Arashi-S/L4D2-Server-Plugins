@@ -16,6 +16,7 @@
 * 广告：`addons\sourcemod\configs\advertisements.txt`
 * 连接Mysql数据库：`addons\sourcemod\configs\databases.cfg中第35行`
 * 崩溃日志所有权：`addons\sourcemod\configs\core.cfg中第160行`
+* 设置Rcon密码：`cfg/server.cfg 第5行`
 * `mymotd`、 `myhost`
 ### 启动项（仅参考）
 * `-strictportbind` `-nobreakpad` `-noassert` `-game left4dead2`
