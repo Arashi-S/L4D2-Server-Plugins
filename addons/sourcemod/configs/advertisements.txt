@@ -36,7 +36,7 @@
     }
 	"5"
     {
-        "chat"			"{default}[{green}公告{default}] {blue}欢迎加入我服QQ群：{default}811 {default}940 {olive}760"
+        "chat"			"{default}[{green}公告{default}] {blue}服务器开启了{default}反伤，{blue}注意你的{default}枪口，{blue}可输入命令{default}@v{olive}投票关闭"
     }
     "6"
     {
