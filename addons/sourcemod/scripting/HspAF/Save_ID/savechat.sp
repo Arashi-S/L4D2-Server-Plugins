@@ -25,6 +25,9 @@ static const char
 		"setpause",
 		"choose_opendoor",
 		"choose_closedoor",
+		"triggered",
+		"HspAF_addcvar",
+		"HspAF_rconset",
 		"go_away_from_keyboard"
 	};
 
@@ -94,14 +97,6 @@ Action CommandListener(int client, char[] command, int argc)
  * @param szString     Input string for conversion and also the output
  * @return             void
  */
-void StringToLowerCase(char[] szInput) 
-{
-	int iIterator;
-	while (szInput[iIterator] != EOS) {
-		szInput[iIterator] = CharToLower(szInput[iIterator]);
-		++iIterator;
-	}
-}
 
 public void OnMapEnd()
 {
