@@ -1,0 +1,25 @@
+// 0 = false   1 = true
+
+//启用购物通报
+BuyPrint : 1
+
+//启用击杀获得小鱼干提示
+KIGPrint : 1
+
+//启用击杀获得小鱼干达到上限时提示
+KGFPrint : 1
+
+//禁用混合模式
+IsNotMix : 1
+
+//启用冻结玩家提示
+FreGamer : 1
+
+//启用冻结商品提示
+FreGoods : 1
+
+//启用记录玩家购买商品
+BYRecord : 1
+
+//启用双按键开启购物菜单
+UTwoKeys : 1
