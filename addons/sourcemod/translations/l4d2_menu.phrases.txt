@@ -77,6 +77,13 @@
 		"chi"           "跳舞"
 	}
 
+	"sm_shop"
+	{
+		"en"            "Shop"
+		"zho"           "商店"
+		"chi"           "商店"
+	}
+
 	"MENU"
 	{
 		"en"			"Player Menu"		
